@@ -30,7 +30,6 @@ export default class SpeakerTag extends HTMLElement{
   }
 
   set_keydown() {
-    console.log(document);
     document.addEventListener('keydown', (event) => {
         const keyName = event.key;
         if (keyName === " ") {

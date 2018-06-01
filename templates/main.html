@@ -25,18 +25,51 @@
 
   <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
   <script type="module" src="/static/SpeakerTag.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
   <div id="main-container">
     <div id="mydisplay-container" class="display-container">
-      <canvas class="display-canvas">
-      
-      </canvas>
-
       <speaker-tag></speaker-tag>
     </div>
     <div id="opdisplay-container" class="display-container">
     
     </div>
   </div>
+
+  <script>
+    var width = 600;
+    var height = 400;
+
+    // ステージを作る
+    var stage = new PIXI.Stage(0x000000);
+
+    // レンダラーを作る
+    var renderer = PIXI.autoDetectRenderer(width, height);
+
+    // レンダラーのviewをDOMに追加する
+    document.getElementById("mydisplay-container").appendChild(renderer.view);
+
+    // 画像からスプライトオブジェクトを作る
+    var texture = PIXI.Texture.fromImage('static/img/snow.png');
+    var MAX_SNOW = 300;
+    var snowimgs = [];
+
+    var point = new PIXI.Sprite(texture);
+    stage.addChild(point);
+
+    var event = null;
+    window.onmousemove = handleMouseMove;
+    function handleMouseMove(event) {
+      event = event || window.event; // IE対応
+      point.x = event.clientX - texture.orig.width/2;
+      point.y = event.clientY - texture.orig.height/2;
+      renderer.render(stage);
+    }
+
+    function animate(){
+    }
+
+    requestAnimationFrame(animate);
+  </script>
 </body>
 </html>
 
