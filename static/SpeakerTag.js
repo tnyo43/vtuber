@@ -20,7 +20,7 @@ export default class SpeakerTag extends HTMLElement{
     this.recognizer = new Recognizer();
     this.recognizer.set_speaker(null);
 
-    this.canvas = document.getElementById("recording");
+    this.canvas = this.shadowRoot.getElementById("recording");
     this.context = this.canvas.getContext("2d");
     this.canvas.width = 40;
     this.canvas.height = 40;

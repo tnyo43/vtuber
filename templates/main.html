@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>会話テスト</title>
+    <style>
+        li{
+            list-style: none;
+            margin: 10px 0;
+        }
+        #main-container {
+          display: flex;
+        }
+        .display-container {
+          height: 500px;
+          width: 50%;
+        }
+        .display-canvas {
+          margin: 10px;
+          width: 100%
+        }
+    </style>
+</head>
+<body>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script type="module" src="/static/SpeakerTag.js"></script>
+  <div id="main-container">
+    <div id="mydisplay-container" class="display-container">
+      <canvas class="display-canvas">
+      
+      </canvas>
+
+      <speaker-tag></speaker-tag>
+    </div>
+    <div id="opdisplay-container" class="display-container">
+    
+    </div>
+  </div>
+</body>
+</html>
+
+
