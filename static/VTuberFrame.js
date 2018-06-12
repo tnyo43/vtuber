@@ -7,7 +7,9 @@ export default class VTuberFrame extends HTMLElement{
     this.shadowRoot.innerHTML = `
       <style>
         #display-container {
-
+        }
+        #video {
+          display: none;
         }
       </style>
       <div id="display-container">
@@ -59,7 +61,6 @@ export default class VTuberFrame extends HTMLElement{
           var points = this.ctrack.getCurrentPosition()
           if (points){
             var time = Math.random()
-            console.log(points, time)
             this.face_sprite.position.x = 0;
             this.face_sprite.position.y = 0;
             var n = this.points_index.length;

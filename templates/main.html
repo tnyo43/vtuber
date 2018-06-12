@@ -22,6 +22,9 @@
         #video {
         
         }
+        #vtubertag {
+          width: 100;
+        }
     </style>
 </head>
 <body>
@@ -36,13 +39,14 @@
     <div id="mydisplay-container" class="display-container">
       <video id="video"></video>
       <speaker-tag></speaker-tag>
-      <vtuber-frame></vtuber-frame>
+      <vtuber-frame id="vtubertag"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
     </div>
   </div>
 
   <script>
+    /*
     var width = 600;
     var height = 400;
 
@@ -81,73 +85,8 @@
     var canvas1 = renderer.view;
     console.log(renderer.view);
     var disp = document.getElementById("mydisplay-container");
-
-    /*
-    distance = (x, y) => {
-      return Math.pow(Math.pow(x[0]-y[0], 2) + Math.pow(x[1]-y[1], 2), 0.5)
-    }
-
-    rotate = (l, r, b, c) => {
-      // l -> left, r -> right, b -> brow, c -> chin
-      return -Math.atan2(r[1]-l[1], -r[0]+l[0]);
-    }
-    
-    function loop() {
-      var currentpoints = ctrack.getCurrentPosition()
-      if (currentpoints) {
-        face_sprite.position.x = 0;
-        face_sprite.position.y = 0;
-
-        for (var i = 0; i < FEATURE_POINTS.length; i++) {
-          var point = currentpoints[FEATURE_POINTS[i]];
-          facepoints[i].position.x = point[0];
-          facepoints[i].position.y = point[1];
-          face_sprite.position.x += point[0]/FEATURE_POINTS.length;
-          face_sprite.position.y += point[1]/FEATURE_POINTS.length;
-        }
-        var fw = distance(currentpoints[left], currentpoints[right]), fh = distance(currentpoints[chin], currentpoints[nouse])*2;
-        var r = rotate(currentpoints[left], currentpoints[right], currentpoints[brow], currentpoints[chin])
-        face_sprite.width = fw;
-        face_sprite.height = fh;
-        face_sprite.anchor.x = 0.5;
-        face_sprite.anchor.y = 0.5;
-        face_sprite.rotation = r;
-        renderer.render(stage);
-      }
-      drawRequest = requestAnimationFrame(loop);
-    }
-
-    navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false
-    }).then((mediaStream) => {
-      video.srcObject = mediaStream;
-      video.play();
-      video.onloadedmetadata = () => {
-        loop();
-        video.width = canvas1.width;
-        video.height = canvas1.height;
-        ctrack.init(pModel);
-        ctrack.start(video);
-      }
-    });
-
-    function clmtrackrConvergedHandler() {
-      console.log("顔検出成功")
-
-      document.removeEventListener("clmtrackrLost", clmtrackrLostHandler);
-      document.removeEventListener("clmtrackrConverged", clmtrackrConvergedHandler);
-    }
-
-    function clmtrackrLostHandler () {
-      //cancelAnimationFrame(drawRequest);
-      // ctrack.stop();
-      document.removeEventListener("clmtrackrLost", clmtrackrLostHandler);
-      document.removeEventListener("clmtrackrConverged", clmtrackrConvergedHandler);
-      console.log("顔検出失敗")
-    }
     */
-  </script>
+ </script>
 </body>
 </html>
 
