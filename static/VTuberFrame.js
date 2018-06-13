@@ -27,9 +27,6 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.container.appendChild(this.canvas);
     this.callback = null;
-    this.set_callback = (f) => {
-      this.callback = f;
-    }
 
     this.src = null;
     this.texture = null;
