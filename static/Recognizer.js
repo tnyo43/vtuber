@@ -9,6 +9,16 @@ export default class {
 
     this.flag_speech = false;
     this.flag_result = false;
+
+    this.callback = null;
+  }
+
+  set callback (f) {
+    this._callback = f;
+  }
+
+  get callback () {
+    return this._callback;
   }
 
   set_speaker(speaker) {
@@ -58,6 +68,7 @@ export default class {
         console.log("result is \"" + value + "\"")
         if (this.speaker != null) {
           this.speaker.speak(value);
+          this.callback(value);
         }
       }
     }

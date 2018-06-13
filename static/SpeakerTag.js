@@ -1,12 +1,12 @@
 import Recognizer from "./Recognizer.js";
+import Speaker from "./Speaker.js";
 
 export default class SpeakerTag extends HTMLElement{
   constructor() {
 
     super();
 
-    this.attachShadow({mode: "open"}); // mode:open -> javascriptからだけ操作可能
-                                       // mode:close -> jsからも操作できない
+    this.attachShadow({mode: "open"}); 
     this.shadowRoot.innerHTML = `
         <style>
           .canv {
@@ -19,6 +19,7 @@ export default class SpeakerTag extends HTMLElement{
 
     this.recognizer = new Recognizer();
     this.recognizer.set_speaker(null);
+    this.comp_speaker = new Speaker();
 
     this.canvas = this.shadowRoot.getElementById("recording");
     this.context = this.canvas.getContext("2d");
@@ -27,15 +28,59 @@ export default class SpeakerTag extends HTMLElement{
 
     this.show_stop_recording();
     this.set_keydown();
+    this.recognizer_active = false;
+    this.comp_active = false;
+
+    this.comp_speak = (text) => {
+      if (this.comp_active == false) {
+        return;
+      } else {
+        this.comp_speaker.speak(text);
+      }
+    }
+
+    this.callback = null;
+  }
+
+  set recognizer_active (b) {
+    this._recognizer_active = b;
+    if (!b) {
+      this.recognizer.stop();
+      this.show_stop_recording();
+      this.recognizer.flag_speech = false;
+    }
+  }
+
+  get recognizer_active () {
+    return this._recognizer_active;
+  }
+
+  set comp_active (b) {
+    this._comp_active = b;
+  }
+
+  get comp_active () {
+    return this._comp_active;
+  }
+
+  set callback (f) {
+    this._callback = f;
+    this.recognizer.callback = this._callback;
+  }
+
+  get callback () {
+    return this._callback;
   }
 
   set_keydown() {
     document.addEventListener('keydown', (event) => {
         const keyName = event.key;
         if (keyName === " ") {
-          this.recognizer.start();
-          this.show_recording();
-          this.recognizer.flag_speech = true;
+          if (this.recognizer_active) {
+            this.recognizer.start();
+            this.show_recording();
+            this.recognizer.flag_speech = true;
+          }
         }
         else if (keyName == "q") {
           this.recognizer.stop();

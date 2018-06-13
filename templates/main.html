@@ -50,6 +50,14 @@
     import VTuberFrame from './static/VTuberFrame.js'
 
     let stag = document.getElementById("speakertag");
+    stag.recognizer_active = true;
+    stag.comp_active = true;
+    let log = (x) => {
+      console.log(x);
+      stag.comp_speak(x);
+    }
+    stag.callback = log;
+
     let vtag = document.getElementById('vtubertag');
     let vtag2 = document.getElementById('vtubertag2');
     let callback = (x) => {
@@ -61,7 +69,6 @@
     vtag.callback = callback;
     vtag.self_active = true;
     vtag2.comp_active = true;
-
  </script>
 </body>
 </html>
