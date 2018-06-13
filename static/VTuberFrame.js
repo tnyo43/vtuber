@@ -27,10 +27,13 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.container.appendChild(this.canvas);
     this.callback = null;
+    this.self_active = false;
+    this.comp_active = false;
 
     this.src = null;
     this.texture = null;
     this.face_sprite = null;
+    this.points = null;
 
     this.RIGHT = 1;
     this.LEFT  = 13;
@@ -42,56 +45,81 @@ export default class VTuberFrame extends HTMLElement{
     this.ctrack = new clm.tracker();
     this.draw_request = null;
 
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: false
-    }).then((mediaStream) => {
-      this.video.srcObject = mediaStream;
-      this.video.play();
-      this.video.onloadedmetadata = () => {
-        this.video.width = this.renderer.view.width;
-        this.video.height = this.renderer.view.height;
-        this.ctrack.init(pModel);
-        this.ctrack.start(this.video);
- 
-        let loop = () => {
-          if (this.face_sprite != null){
-            var points = this.ctrack.getCurrentPosition()
-            if (points){
-              var time = Math.random()
-              this.face_sprite.position.x = 0;
-              this.face_sprite.position.y = 0;
-              var n = this.points_index.length;
-              for (var i = 0; i < n; i++) {
-                var point = points[this.points_index[i]];
-                this.face_sprite.position.x += point[0]/n;
-                this.face_sprite.position.y += point[1]/n;
-              }
-              if (points[this.LEFT] != undefined) {
-              var fw = this.distance(points[this.LEFT], points[this.RIGHT]);
-              var fh = this.distance(points[this.CHIN], points[this.NOUSE])*2;
-              var r = this.rotate(points[this.LEFT], points[this.RIGHT], points[this.BROW], points[this.CHIN]);
-              this.face_sprite.width = fw;
-              this.face_sprite.height = fh;
-              this.face_sprite.anchor.x = 0.5;
-              this.face_sprite.anchor.y = 0.5;
-              this.face_sprite.rotation = r;
-              this.renderer.render(this.stage);
-              }
-            }
-
-            if (this.callback != null) {
-              this.callback(points);
-            }
-            else {
-              console.log("this.callback is null")
-            }
-          }
-          this.draw_request = requestAnimationFrame(loop);  
-        };
-        loop()
+    this.plot_face = () => {
+      this.face_sprite.position.x = 0;
+      this.face_sprite.position.y = 0;
+      var n = this.points_index.length;
+      for (var i = 0; i < n; i++) {
+        var point = this.points[this.points_index[i]];
+        this.face_sprite.position.x += point[0]/n;
+        this.face_sprite.position.y += point[1]/n;
       }
-    });
+      if (this.points[this.LEFT] != undefined) {
+        var fw = this.distance(this.points[this.LEFT], this.points[this.RIGHT]);
+        var fh = this.distance(this.points[this.CHIN], this.points[this.NOUSE])*2;
+        var r = this.rotate(this.points[this.LEFT], this.points[this.RIGHT], this.points[this.BROW], this.points[this.CHIN]);
+        this.face_sprite.width = fw;
+        this.face_sprite.height = fh;
+        this.face_sprite.anchor.x = 0.5;
+        this.face_sprite.anchor.y = 0.5;
+        this.face_sprite.rotation = r;
+        this.renderer.render(this.stage);
+      }
+    }
+
+    this.set_points = (points) => {
+      if (this.comp_active) {
+        this.points = points;
+      } else {
+        return;
+      }
+    }
+
+    this.self_activate = () => {
+      navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      }).then((mediaStream) => {
+        this.video.srcObject = mediaStream;
+        this.video.play();
+        this.video.onloadedmetadata = () => {
+          this.video.width = this.renderer.view.width;
+          this.video.height = this.renderer.view.height;
+          this.ctrack.init(pModel);
+          this.ctrack.start(this.video);
+
+          let self_loop = () => {
+            if (this.face_sprite != null){
+              this.points = this.ctrack.getCurrentPosition()
+              if (this.points){
+                this.plot_face();
+              }
+              if (this.callback != null) {
+                this.callback(this.points);
+              }
+            }
+            if (this.self_active) {
+              this.draw_request = requestAnimationFrame(self_loop);  
+            }
+          };
+          self_loop()
+        }
+      });
+    }
+
+    this.comp_activate = (points) => {
+      let comp_loop = () => {
+        if (this.face_sprite != null){
+          if (this.points){
+            this.plot_face();
+          }
+        }
+        if (this.comp_active){
+          this.draw_request = requestAnimationFrame(comp_loop);  
+        }
+      };
+      comp_loop()
+    }
   }
 
   set callback(f) {
@@ -116,6 +144,32 @@ export default class VTuberFrame extends HTMLElement{
   get src() {
     return this._src;
   }
+
+  set self_active(b) {
+    this._self_active = b;
+    if (b) {
+      this.comp_active = false;
+      this.self_activate();
+    }
+  }
+
+  get self_active() {
+    return this._self_active;
+  }
+
+  set comp_active(b) {
+    this._comp_active = b;
+    if (b) {
+      this.self_active = false;
+      this.comp_activate();
+    }
+  }
+
+  get comp_active() {
+    return this._comp_active;
+  }
+
+
 
   distance (x, y) {
     return Math.pow(Math.pow(x[0]-y[0], 2) + Math.pow(x[1]-y[1], 2), 0.5);

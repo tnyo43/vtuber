@@ -20,7 +20,7 @@
           width: 100%
         }
         #video {
-        
+
         }
         #vtubertag {
           width: 100;
@@ -40,6 +40,7 @@
       <video id="video"></video>
       <speaker-tag id="speakertag"></speaker-tag>
       <vtuber-frame id="vtubertag"></vtuber-frame>
+      <vtuber-frame id="vtubertag2"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
     </div>
@@ -50,12 +51,16 @@
 
     let stag = document.getElementById("speakertag");
     let vtag = document.getElementById('vtubertag');
+    let vtag2 = document.getElementById('vtubertag2');
     let callback = (x) => {
-      console.log(x);
+      vtag2.set_points(x);
     }
-    vtag.src = 'static/img/kao.png';
-    vtag.callback = callback;
 
+    vtag.src = 'static/img/kao.png';
+    vtag2.src = 'static/img/kao2.png';
+    vtag.callback = callback;
+    vtag.self_active = true;
+    vtag2.comp_active = true;
 
  </script>
 </body>
