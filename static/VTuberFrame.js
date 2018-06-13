@@ -26,6 +26,10 @@ export default class VTuberFrame extends HTMLElement{
     this.renderer = PIXI.autoDetectRenderer(this.WIDTH, this.HEIGHT);
     this.canvas = this.renderer.view;
     this.container.appendChild(this.canvas);
+    this.callback = null;
+    this.set_callback = (f) => {
+      this.callback = f;
+    }
 
     this.facefile = 'static/img/kao.png';
     this.texture = PIXI.Texture.fromImage(this.facefile);
@@ -44,6 +48,7 @@ export default class VTuberFrame extends HTMLElement{
 
     this.ctrack = new clm.tracker();
     this.draw_request = null;
+
 
     navigator.mediaDevices.getUserMedia({
       video: true,
@@ -81,11 +86,31 @@ export default class VTuberFrame extends HTMLElement{
             this.renderer.render(this.stage);
             }
           }
+
+          if (this.callback != null) {
+            this.callback(points);
+          }
+          else {
+            console.log("this.callback is null")
+          }
           this.draw_request = requestAnimationFrame(loop);  
         };
         loop()
       }
     });
+  }
+
+  set callback(f) {
+    console.log("set callback")
+    this._callback = f;
+  }
+
+  get callback() {
+    return this._callback;
+  }
+
+  hoge() {
+    console.log("hoge")
   }
 
   distance (x, y) {
