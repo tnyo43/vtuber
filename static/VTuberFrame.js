@@ -100,6 +100,8 @@ export default class VTuberFrame extends HTMLElement{
             }
             if (this.self_active) {
               this.draw_request = requestAnimationFrame(self_loop);  
+            } else {
+              mediaStream.getVideoTracks()[0].stop();
             }
           };
           self_loop()
