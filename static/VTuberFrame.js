@@ -31,8 +31,9 @@ export default class VTuberFrame extends HTMLElement{
       this.callback = f;
     }
 
-    this.facefile = 'static/img/kao.png';
-    this.texture = PIXI.Texture.fromImage(this.facefile);
+    this.src = null;
+    this.texture = null;
+    this.face_sprite = null;
 
     this.RIGHT = 1;
     this.LEFT  = 13;
@@ -41,14 +42,8 @@ export default class VTuberFrame extends HTMLElement{
     this.NOUSE = 62;
     this.points_index = [this.RIGHT, this.LEFT, this.CHIN, this.BROW, this.NOUSE];
 
-    this.face_sprite = new PIXI.Sprite(this.texture);
-    this.face_sprite.height = 1000;
-    this.face_sprite.width = 1000;
-    this.stage.addChild(this.face_sprite);
-
     this.ctrack = new clm.tracker();
     this.draw_request = null;
-
 
     navigator.mediaDevices.getUserMedia({
       video: true,
@@ -63,35 +58,37 @@ export default class VTuberFrame extends HTMLElement{
         this.ctrack.start(this.video);
  
         let loop = () => {
-          var points = this.ctrack.getCurrentPosition()
-          if (points){
-            var time = Math.random()
-            this.face_sprite.position.x = 0;
-            this.face_sprite.position.y = 0;
-            var n = this.points_index.length;
-            for (var i = 0; i < n; i++) {
-              var point = points[this.points_index[i]];
-              this.face_sprite.position.x += point[0]/n;
-              this.face_sprite.position.y += point[1]/n;
+          if (this.face_sprite != null){
+            var points = this.ctrack.getCurrentPosition()
+            if (points){
+              var time = Math.random()
+              this.face_sprite.position.x = 0;
+              this.face_sprite.position.y = 0;
+              var n = this.points_index.length;
+              for (var i = 0; i < n; i++) {
+                var point = points[this.points_index[i]];
+                this.face_sprite.position.x += point[0]/n;
+                this.face_sprite.position.y += point[1]/n;
+              }
+              if (points[this.LEFT] != undefined) {
+              var fw = this.distance(points[this.LEFT], points[this.RIGHT]);
+              var fh = this.distance(points[this.CHIN], points[this.NOUSE])*2;
+              var r = this.rotate(points[this.LEFT], points[this.RIGHT], points[this.BROW], points[this.CHIN]);
+              this.face_sprite.width = fw;
+              this.face_sprite.height = fh;
+              this.face_sprite.anchor.x = 0.5;
+              this.face_sprite.anchor.y = 0.5;
+              this.face_sprite.rotation = r;
+              this.renderer.render(this.stage);
+              }
             }
-            if (points[this.LEFT] != undefined) {
-            var fw = this.distance(points[this.LEFT], points[this.RIGHT]);
-            var fh = this.distance(points[this.CHIN], points[this.NOUSE])*2;
-            var r = this.rotate(points[this.LEFT], points[this.RIGHT], points[this.BROW], points[this.CHIN]);
-            this.face_sprite.width = fw;
-            this.face_sprite.height = fh;
-            this.face_sprite.anchor.x = 0.5;
-            this.face_sprite.anchor.y = 0.5;
-            this.face_sprite.rotation = r;
-            this.renderer.render(this.stage);
-            }
-          }
 
-          if (this.callback != null) {
-            this.callback(points);
-          }
-          else {
-            console.log("this.callback is null")
+            if (this.callback != null) {
+              this.callback(points);
+            }
+            else {
+              console.log("this.callback is null")
+            }
           }
           this.draw_request = requestAnimationFrame(loop);  
         };
@@ -101,7 +98,6 @@ export default class VTuberFrame extends HTMLElement{
   }
 
   set callback(f) {
-    console.log("set callback")
     this._callback = f;
   }
 
@@ -109,8 +105,19 @@ export default class VTuberFrame extends HTMLElement{
     return this._callback;
   }
 
-  hoge() {
-    console.log("hoge")
+  set src(s) {
+    if (s != null){
+      this._src = s;
+      this.texture = PIXI.Texture.fromImage(this._src);
+      this.face_sprite = new PIXI.Sprite(this.texture);
+      this.face_sprite.height = 1000;
+      this.face_sprite.width = 1000;
+      this.stage.addChild(this.face_sprite);
+    }
+  }
+
+  get src() {
+    return this._src;
   }
 
   distance (x, y) {
