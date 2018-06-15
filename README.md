@@ -61,7 +61,7 @@ htmlファイルで
 ```
 <speaker-tag id="speakertag"></speaker-tag>
 
-<script>
+<script type="module">
 
   let stag = document.getElementById("speakertag");
   
