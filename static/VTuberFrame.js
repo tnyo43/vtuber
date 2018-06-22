@@ -30,10 +30,17 @@ export default class VTuberFrame extends HTMLElement{
     this.self_active = false;
     this.comp_active = false;
 
+    // 顔のテクスチャ
     this.src = null;
     this.texture = null;
     this.face_sprite = null;
     this.points = null;
+
+    // 背景のテクスチャ
+    this.bg_src = null;
+    this.bg_texture = null;
+    this.bg_sprite = null;
+    this.bg_src = 'static/img/default.png';
 
     this.RIGHT = 1;
     this.LEFT  = 13;
@@ -145,6 +152,25 @@ export default class VTuberFrame extends HTMLElement{
 
   get src() {
     return this._src;
+  }
+
+  set bg_src(s) {
+    if (s != null) {
+      this._bg_src = s;
+      this.bg_texture = PIXI.Texture.fromImage(this._bg_src);
+      if (this.bg_sprite == null) {
+        this.bg_sprite = new PIXI.Sprite(this.bg_texture);
+        this.bg_sprite.height = this.HEIGHT;
+        this.bg_sprite.width = this.WIDTH;
+        this.stage.addChild(this.bg_sprite);
+      } else {
+        this.bg_sprite.setTexture(this.bg_texture);
+      }
+    }
+  }
+
+  get bg_src() {
+    return this._br_src;
   }
 
   set self_active(b) {
