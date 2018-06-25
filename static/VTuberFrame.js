@@ -7,13 +7,19 @@ export default class VTuberFrame extends HTMLElement{
     this.shadowRoot.innerHTML = `
       <style>
         #display-container {
+          display: flex;
         }
         #video {
           display: none;
         }
+        #option {
+          background-color: #cccccc;
+          width = 200px;
+        }
       </style>
       <div id="display-container">
         <video id="video"></video>
+        <div id="option">aaa</div>
       </div>
     `;
 
@@ -25,7 +31,8 @@ export default class VTuberFrame extends HTMLElement{
     this.stage = new PIXI.Stage(0x000000);
     this.renderer = PIXI.autoDetectRenderer(this.WIDTH, this.HEIGHT);
     this.canvas = this.renderer.view;
-    this.container.appendChild(this.canvas);
+    this.option = this.shadowRoot.getElementById("option");
+    this.container.insertBefore(this.canvas, this.option);
     this.callback = null;
     this.self_active = false;
     this.comp_active = false;
@@ -129,6 +136,25 @@ export default class VTuberFrame extends HTMLElement{
       };
       comp_loop()
     }
+
+    this.set_option = () => {
+      // optionの設定
+      console.log(this.option);
+
+      var num = 2;
+      for (var i = 0; i < num; i++) {
+        var image = new Image();
+        const filename = 'static/img/background/bg' +('000' + i).slice(-3) + ".jpg"
+        image.addEventListener("click", ()=>{
+          this.bg_src = filename;
+        }); 
+        image.src = filename;
+        image.height = 100;
+        this.option.appendChild(image);
+      }
+    }
+
+    this.set_option();
   }
 
   set callback(f) {
