@@ -21,17 +21,28 @@ export default class VTuberFrame extends HTMLElement{
           display: none;
         }
 
+        #bg-container, #face-container {
+          overflow-y: scroll;
+          max-height: 90%;
+        }
+
         #option-bg, #option-face {
           background-color: #cccccc;
           height = 100%;
-          overflow-y: scroll;
+          overflow-y: hidden;
           flex-grow: 1;
           flex-basis: 100%;
         }
 
         .option-title {
           color: red;
-          style: bold;
+          text-align: center;
+          height: 10%;
+          font-size: 30px;
+        }
+
+        .icon {
+
         }
 
       </style>
