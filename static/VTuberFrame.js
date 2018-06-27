@@ -8,22 +8,44 @@ export default class VTuberFrame extends HTMLElement{
       <style>
         #display-container {
           display: flex;
-          width: 750px;
+          width: 900px;
           height: 400px;
         }
+        #option {
+          display: flex;
+        }
+
         #video {
           display: none;
         }
-        #option {
+
+        #option-bg, #option-face {
           background-color: #cccccc;
           height = 100%;
-          width = 30px;
           overflow-y: scroll;
+          flex-grow: 1;
+          flex-basis: 100%;
         }
+
+        .option-title {
+          color: red;
+          style: bold;
+        }
+
       </style>
+
       <div id="display-container">
         <video id="video"></video>
-        <div id="option">背景</div>
+        <div id="option">
+          <div id="option-bg">
+            <div class="option-title">背景</div>
+            <div id="bg-container"></div>
+          </div>
+          <div id="option-face">
+            <div class="option-title">顔</div>
+            <div id="face-container"></div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -35,8 +57,41 @@ export default class VTuberFrame extends HTMLElement{
     this.stage = new PIXI.Stage(0x000000);
     this.renderer = PIXI.autoDetectRenderer(this.WIDTH, this.HEIGHT);
     this.canvas = this.renderer.view;
+
     this.option = this.shadowRoot.getElementById("option");
     this.container.insertBefore(this.canvas, this.option);
+    this.option_bg = null;
+    this.option_face = null;
+
+    this.set_option = () => {
+      // optionの設定
+  
+      if (this.self_active){
+        this.option.style.display = "flex";
+        console.log(this.option_bg == null);
+        if (this.option_bg == null) {
+          this.bg_container = this.shadowRoot.getElementById("bg-container");
+          this.face_container = this.shadowRoot.getElementById("face-container");
+
+          var num = 5;
+          for (var i = 0; i < num; i++) {
+            var image = new Image();
+            const filename = 'static/img/background/bg' +('000' + i).slice(-3) + ".jpg"
+            image.addEventListener("click", ()=>{
+              this.bg_src = filename;
+            }); 
+            image.src = filename;
+            image.height = 100;
+            image.width = 150;
+            this.bg_container.appendChild(image);
+          }
+        }
+      } else {
+        this.option.style.display = "none";
+      }
+    }
+
+
     this.callback = null;
     this.self_active = false;
     this.comp_active = false;
@@ -138,25 +193,7 @@ export default class VTuberFrame extends HTMLElement{
           this.draw_request = requestAnimationFrame(comp_loop);  
         }
       };
-      comp_loop()
-    }
-
-    this.set_option = () => {
-      // optionの設定
-      console.log(this.option);
-
-      var num = 5;
-      for (var i = 0; i < num; i++) {
-        var image = new Image();
-        const filename = 'static/img/background/bg' +('000' + i).slice(-3) + ".jpg"
-        image.addEventListener("click", ()=>{
-          this.bg_src = filename;
-        }); 
-        image.src = filename;
-        image.height = 100;
-        image.width = 150;
-        this.option.appendChild(image);
-      }
+      comp_loop();
     }
 
     this.set_option();
@@ -209,6 +246,7 @@ export default class VTuberFrame extends HTMLElement{
     if (b) {
       this.comp_active = false;
       this.self_activate();
+      this.set_option();
     }
   }
 
