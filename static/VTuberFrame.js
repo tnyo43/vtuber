@@ -81,6 +81,34 @@ export default class VTuberFrame extends HTMLElement{
     this.face_textures = [];
     this.face_index = 0;
 
+    this.set_face_texture = (texture) => { 
+      if (texture != null) {
+        this.texture = texture;
+        if (this.face_sprite == null) {
+          this.face_sprite = new PIXI.Sprite(this.texture);
+          this.face_sprite.height = 1000;
+          this.face_sprite.width = 1000;
+          this.stage.addChild(this.face_sprite);
+        } else {
+          this.face_sprite.setTexture(this.texture);
+        }
+      }
+    }
+
+    this.set_bg_texture = (texture) => {
+      if (texture != null) {
+        this.bg_texture = texture;
+        if (this.bg_sprite == null) {
+          this.bg_sprite = new PIXI.Sprite(this.bg_texture);
+          this.bg_sprite.height = this.HEIGHT;
+          this.bg_sprite.width = this.WIDTH;
+          this.stage.addChild(this.bg_sprite);
+        } else {
+          this.bg_sprite.setTexture(this.bg_texture);
+        }
+      }
+    }
+
     this.set_option = () => {
       // optionの設定
       if (this.bg_container == null) {
@@ -92,8 +120,7 @@ export default class VTuberFrame extends HTMLElement{
           const j = i;
           const filename = IMG_DIR + 'background/bg' +('000' + i).slice(-3) + ".jpg"
           image.addEventListener("click", ()=>{
-            //this.bg_index = j;
-            this.bg_src = filename;
+            this.set_bg_texture(this.bg_textures[j]);
           }); 
           image.src = filename;
           image.height = 100;
@@ -113,8 +140,7 @@ export default class VTuberFrame extends HTMLElement{
           const j = i;
           const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
           image.addEventListener("click", ()=>{
-            //this.face_index = j;
-            this.src = filename;
+            this.set_face_texture(this.face_textures[j]);
           }); 
           image.src = filename;
           image.height = 130;
@@ -130,23 +156,23 @@ export default class VTuberFrame extends HTMLElement{
         this.option.style.display = "none";
       }
     }
-    this.set_option();
 
     this.callback = null;
     this.self_active = false;
     this.comp_active = false;
-
-    // 顔のテクスチャ
-    this.src = null;
-    this.texture = null;
-    this.face_sprite = null;
-    this.points = null;
 
     // 背景のテクスチャ
     this.bg_src = null;
     this.bg_texture = null;
     this.bg_sprite = null;
     this.bg_src = 'static/img/default.png';
+  
+    // 顔のテクスチャ
+    this.texture = null;
+    this.src = null;
+    this.face_sprite = null;
+    this.points = null;
+
 
     this.RIGHT = 1;
     this.LEFT  = 13;
@@ -235,6 +261,7 @@ export default class VTuberFrame extends HTMLElement{
       };
       comp_loop();
     }
+    this.set_option();
   }
 
   set callback(f) {
@@ -245,39 +272,10 @@ export default class VTuberFrame extends HTMLElement{
     return this._callback;
   }
 
-  set texture(texture) {
-    if (texture != null) {
-      this._texture = texture;
-      if (this.face_sprite == null) {
-        this.face_sprite = new PIXI.Sprite(this._texture);
-        this.face_sprite.height = 1000;
-        this.face_sprite.width = 1000;
-        this.stage.addChild(this.face_sprite);
-      } else {
-        if (this._texture != null) {
-          this.face_sprite.setTexture(this._texture);
-        }
-      }
-    }
-  }
-
-  get texture() {
-    return this._texture;
-  }
-
-  set face_index(index) {
-    this._face_index = index;
-    this.texture = this.face_textures[index];
-  }
-
-  get face_index() {
-    return this._face_index;
-  }
-
   set src(s) {
-    if (s != null){
+    if (s != null) {
       this._src = s;
-      this.texture = PIXI.Texture.fromImage(this._src);
+      this.set_face_texture(PIXI.Texture.fromImage(s));
     }
   }
 
@@ -288,39 +286,12 @@ export default class VTuberFrame extends HTMLElement{
   set bg_src(s) {
     if (s != null) {
       this._bg_src = s;
-      this.bg_texture = PIXI.Texture.fromImage(s);
+      this.set_bg_texture(PIXI.Texture.fromImage(s));
     }
   }
 
   get bg_src() {
     return this._br_src;
-  }
-
-  set bg_texture(texture) {
-    if (texture != null) {
-      this._bg_texture = texture;
-      if (this.bg_sprite == null) {
-        this.bg_sprite = new PIXI.Sprite(this._bg_texture);
-        this.bg_sprite.height = this.HEIGHT;
-        this.bg_sprite.width = this.WIDTH;
-        this.stage.addChild(this.bg_sprite);
-      } else {
-        this.bg_sprite.setTexture(this._bg_texture);
-      }
-    }
-  }
-
-  get bg_texture() {
-    return this._bg_texture;
-  }
-
-  set bg_index(index) {
-    this._bg_index = index;
-    this.bg_texture = this.bg_textures[index];
-  }
-
-  get bg_index() {
-    return this._bg_index;
   }
 
   set self_active(b) {
@@ -347,8 +318,6 @@ export default class VTuberFrame extends HTMLElement{
   get comp_active() {
     return this._comp_active;
   }
-
-
 
   distance (x, y) {
     return Math.pow(Math.pow(x[0]-y[0], 2) + Math.pow(x[1]-y[1], 2), 0.5);
