@@ -8,18 +8,22 @@ export default class VTuberFrame extends HTMLElement{
       <style>
         #display-container {
           display: flex;
+          width: 750px;
+          height: 400px;
         }
         #video {
           display: none;
         }
         #option {
           background-color: #cccccc;
-          width = 200px;
+          height = 100%;
+          width = 30px;
+          overflow-y: scroll;
         }
       </style>
       <div id="display-container">
         <video id="video"></video>
-        <div id="option">aaa</div>
+        <div id="option">背景</div>
       </div>
     `;
 
@@ -141,7 +145,7 @@ export default class VTuberFrame extends HTMLElement{
       // optionの設定
       console.log(this.option);
 
-      var num = 2;
+      var num = 5;
       for (var i = 0; i < num; i++) {
         var image = new Image();
         const filename = 'static/img/background/bg' +('000' + i).slice(-3) + ".jpg"
@@ -150,6 +154,7 @@ export default class VTuberFrame extends HTMLElement{
         }); 
         image.src = filename;
         image.height = 100;
+        image.width = 150;
         this.option.appendChild(image);
       }
     }
