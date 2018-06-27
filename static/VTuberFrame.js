@@ -1,5 +1,7 @@
 import  "./facetrack/clmtrackr.min.js";
 
+var IMG_DIR = "./static/img/";
+
 export default class VTuberFrame extends HTMLElement{
   constructor() {
     super();
@@ -60,37 +62,64 @@ export default class VTuberFrame extends HTMLElement{
 
     this.option = this.shadowRoot.getElementById("option");
     this.container.insertBefore(this.canvas, this.option);
-    this.option_bg = null;
-    this.option_face = null;
+    this.bg_container = null;
+    this.face_container = null; 
+
+    this.bg_textures = [];
+    this.bg_index = 0;
+    this.face_textures = [];
+    this.face_index = 0;
 
     this.set_option = () => {
       // optionの設定
-  
+      if (this.bg_container == null) {
+        this.bg_container = this.shadowRoot.getElementById("bg-container");
+
+        var num = 5;
+        for (var i = 0; i < num; i++) {
+          var image = new Image();
+          const j = i;
+          const filename = IMG_DIR + 'background/bg' +('000' + i).slice(-3) + ".jpg"
+          image.addEventListener("click", ()=>{
+            //this.bg_index = j;
+            this.bg_src = filename;
+          }); 
+          image.src = filename;
+          image.height = 100;
+          image.width = 150;
+          this.bg_container.appendChild(image);
+          var texture = PIXI.Texture.fromImage(filename);
+          this.bg_textures.push(texture);
+        }
+      }
+
+      if (this.face_container == null) {
+        this.face_container = this.shadowRoot.getElementById("face-container");
+
+        var num = 4;
+        for (var i = 0; i < num; i++) {
+          var image = new Image();
+          const j = i;
+          const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
+          image.addEventListener("click", ()=>{
+            //this.face_index = j;
+            this.src = filename;
+          }); 
+          image.src = filename;
+          image.height = 130;
+          image.width = 130;
+          this.face_container.appendChild(image);
+          var texture = PIXI.Texture.fromImage(filename);
+          this.face_textures.push(texture);
+        }
+      }
       if (this.self_active){
         this.option.style.display = "flex";
-        console.log(this.option_bg == null);
-        if (this.option_bg == null) {
-          this.bg_container = this.shadowRoot.getElementById("bg-container");
-          this.face_container = this.shadowRoot.getElementById("face-container");
-
-          var num = 5;
-          for (var i = 0; i < num; i++) {
-            var image = new Image();
-            const filename = 'static/img/background/bg' +('000' + i).slice(-3) + ".jpg"
-            image.addEventListener("click", ()=>{
-              this.bg_src = filename;
-            }); 
-            image.src = filename;
-            image.height = 100;
-            image.width = 150;
-            this.bg_container.appendChild(image);
-          }
-        }
       } else {
         this.option.style.display = "none";
       }
     }
-
+    this.set_option();
 
     this.callback = null;
     this.self_active = false;
@@ -195,8 +224,6 @@ export default class VTuberFrame extends HTMLElement{
       };
       comp_loop();
     }
-
-    this.set_option();
   }
 
   set callback(f) {
@@ -207,14 +234,39 @@ export default class VTuberFrame extends HTMLElement{
     return this._callback;
   }
 
+  set texture(texture) {
+    if (texture != null) {
+      this._texture = texture;
+      if (this.face_sprite == null) {
+        this.face_sprite = new PIXI.Sprite(this._texture);
+        this.face_sprite.height = 1000;
+        this.face_sprite.width = 1000;
+        this.stage.addChild(this.face_sprite);
+      } else {
+        if (this._texture != null) {
+          this.face_sprite.setTexture(this._texture);
+        }
+      }
+    }
+  }
+
+  get texture() {
+    return this._texture;
+  }
+
+  set face_index(index) {
+    this._face_index = index;
+    this.texture = this.face_textures[index];
+  }
+
+  get face_index() {
+    return this._face_index;
+  }
+
   set src(s) {
     if (s != null){
       this._src = s;
       this.texture = PIXI.Texture.fromImage(this._src);
-      this.face_sprite = new PIXI.Sprite(this.texture);
-      this.face_sprite.height = 1000;
-      this.face_sprite.width = 1000;
-      this.stage.addChild(this.face_sprite);
     }
   }
 
@@ -225,20 +277,39 @@ export default class VTuberFrame extends HTMLElement{
   set bg_src(s) {
     if (s != null) {
       this._bg_src = s;
-      this.bg_texture = PIXI.Texture.fromImage(this._bg_src);
-      if (this.bg_sprite == null) {
-        this.bg_sprite = new PIXI.Sprite(this.bg_texture);
-        this.bg_sprite.height = this.HEIGHT;
-        this.bg_sprite.width = this.WIDTH;
-        this.stage.addChild(this.bg_sprite);
-      } else {
-        this.bg_sprite.setTexture(this.bg_texture);
-      }
+      this.bg_texture = PIXI.Texture.fromImage(s);
     }
   }
 
   get bg_src() {
     return this._br_src;
+  }
+
+  set bg_texture(texture) {
+    if (texture != null) {
+      this._bg_texture = texture;
+      if (this.bg_sprite == null) {
+        this.bg_sprite = new PIXI.Sprite(this._bg_texture);
+        this.bg_sprite.height = this.HEIGHT;
+        this.bg_sprite.width = this.WIDTH;
+        this.stage.addChild(this.bg_sprite);
+      } else {
+        this.bg_sprite.setTexture(this._bg_texture);
+      }
+    }
+  }
+
+  get bg_texture() {
+    return this._bg_texture;
+  }
+
+  set bg_index(index) {
+    this._bg_index = index;
+    this.bg_texture = this.bg_textures[index];
+  }
+
+  get bg_index() {
+    return this._bg_index;
   }
 
   set self_active(b) {
