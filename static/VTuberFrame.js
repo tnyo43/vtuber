@@ -45,10 +45,30 @@ export default class VTuberFrame extends HTMLElement{
 
         }
 
+        #canvas-div {
+          position: relative;
+        }
+
+        canvas {
+          position: relative;
+          top: 0;
+          left: 0;
+        }
+
+        .op-btn {
+          z-index: 2;
+          position: absolute;
+          right: 0;
+          top: 0;
+          color: red;
+        }
       </style>
 
       <div id="display-container">
         <video id="video"></video>
+        <div id="canvas-div">
+          <div class="op-btn">x</div>
+        </div>
         <div id="option">
           <div id="option-bg">
             <div class="option-title">背景</div>
@@ -70,9 +90,11 @@ export default class VTuberFrame extends HTMLElement{
     this.stage = new PIXI.Stage(0x000000);
     this.renderer = PIXI.autoDetectRenderer(this.WIDTH, this.HEIGHT);
     this.canvas = this.renderer.view;
-
     this.option = this.shadowRoot.getElementById("option");
-    this.container.insertBefore(this.canvas, this.option);
+    this.op_btn = this.shadowRoot.getElementById("op-btn");
+    this.shadowRoot.getElementById("canvas-div").insertBefore(this.canvas, this.op_btn);
+
+
     this.bg_container = null;
     this.face_container = null; 
 
@@ -165,7 +187,6 @@ export default class VTuberFrame extends HTMLElement{
     this.bg_src = null;
     this.bg_texture = null;
     this.bg_sprite = null;
-    this.bg_src = 'static/img/default.png';
   
     // 顔のテクスチャ
     this.texture = null;
