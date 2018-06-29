@@ -1,6 +1,8 @@
 import  "./facetrack/clmtrackr.min.js";
 
 var IMG_DIR = "./static/img/";
+const FACE_KEY = "FACE";
+const BG_KEY = "BG";
 
 export default class VTuberFrame extends HTMLElement{
   constructor() {
@@ -39,6 +41,7 @@ export default class VTuberFrame extends HTMLElement{
           overflow-y: hidden;
           flex-grow: 1;
           flex-basis: 100%;
+          text-align: center;
         }
 
         .option-title {
@@ -49,7 +52,14 @@ export default class VTuberFrame extends HTMLElement{
         }
 
         .icon {
+          margin: 5px;
+        }
 
+        .selected-icon {
+          border-style: solid;
+          border-width: 2px;
+          margin: 3px;
+          border-color: rgb(255,0,0);
         }
 
         canvas {
@@ -83,6 +93,10 @@ export default class VTuberFrame extends HTMLElement{
           height: 400px;
           background-color: rgb(255,255,255,0.5);
         }
+
+        .active {
+          transform: translateX(-300px);
+        }
       </style>
 
       <div id="display-container">
@@ -114,7 +128,6 @@ export default class VTuberFrame extends HTMLElement{
     this.op_btn = this.shadowRoot.getElementById("op-btn");
     this.white_screen = this.shadowRoot.getElementById("white-screen");
     this.op_btn.addEventListener("click", (event) => {
-      console.log(this.option.style.display)
       if (this.option.style.display == "none" || this.option.style.display == "") {
         this.white_screen.style.display = "inline";
         this.option.style.display = "flex";
@@ -125,13 +138,12 @@ export default class VTuberFrame extends HTMLElement{
     });
     this.container.insertBefore(this.canvas, this.op_btn);
 
+
     this.bg_container = null;
     this.face_container = null; 
 
     this.bg_textures = [];
-    this.bg_index = 0;
     this.face_textures = [];
-    this.face_index = 0;
 
     this.set_face_texture = (texture) => { 
       if (texture != null) {
@@ -166,22 +178,40 @@ export default class VTuberFrame extends HTMLElement{
       }
     }
 
+    this.set_texture = (key, value) => {
+      if (key == FACE_KEY) {
+        this.set_face_texture(this.face_textures[value]);
+      } else if (key == BG_KEY) {
+        this.set_bg_texture(this.bg_textures[value]);
+      }
+    }
+
     this.set_option = () => {
       // optionの設定
       if (this.bg_container == null) {
         this.bg_container = this.shadowRoot.getElementById("bg-container");
 
-        var num = 5;
+        const num = 5;
         for (var i = 0; i < num; i++) {
-          var image = new Image();
+          const image = new Image();
           const j = i;
           const filename = IMG_DIR + 'background/bg' +('000' + i).slice(-3) + ".jpg"
           image.addEventListener("click", ()=>{
             this.set_bg_texture(this.bg_textures[j]);
+            for (var k = 0; k < num; k++) {
+              this.bg_container.children[k].classList.remove("selected-icon");
+            }
+            image.classList.add("selected-icon");
+            if (this.option_callback != null) {
+              var key = BG_KEY;
+              var val = j;
+              this.option_callback(key, val);
+            }
           }); 
           image.src = filename;
-          image.height = 100;
-          image.width = 150;
+          image.height = 100/15*14;
+          image.width = 150/15*14;
+          image.classList.add("icon");
           this.bg_container.appendChild(image);
           var texture = PIXI.Texture.fromImage(filename);
           this.bg_textures.push(texture);
@@ -191,17 +221,27 @@ export default class VTuberFrame extends HTMLElement{
       if (this.face_container == null) {
         this.face_container = this.shadowRoot.getElementById("face-container");
 
-        var num = 4;
+        const num = 4;
         for (var i = 0; i < num; i++) {
-          var image = new Image();
+          const image = new Image();
           const j = i;
           const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
           image.addEventListener("click", ()=>{
             this.set_face_texture(this.face_textures[j]);
+            for (var k = 0; k < num; k++) {
+              this.face_container.children[k].classList.remove("selected-icon");
+            }
+            image.classList.add("selected-icon");
+            if (this.option_callback != null) {
+              var key = FACE_KEY;
+              var val = j;
+              this.option_callback(key, val);
+            }
           }); 
           image.src = filename;
           image.height = 130;
           image.width = 130;
+          image.classList.add("icon");
           this.face_container.appendChild(image);
           var texture = PIXI.Texture.fromImage(filename);
           this.face_textures.push(texture);
@@ -210,18 +250,11 @@ export default class VTuberFrame extends HTMLElement{
       if (this.self_active) {
         this.op_btn.style.display = "inline";
       }
-      /*
-      if (this.self_active){
-        this.option.style.display = "flex";
-        this.op_btn.style.display = "inline";
-      } else {
-        this.option.style.display = "none";
-        this.op_btn.style.display = "none";
-      }
-      */
     }
 
     this.callback = null;
+    this.option_callback = null;
+
     this.self_active = false;
     this.comp_active = false;
 
@@ -327,6 +360,15 @@ export default class VTuberFrame extends HTMLElement{
       comp_loop();
     }
     this.set_option();
+  }
+
+  set option_callback(f) {
+    // 引数は(key, value)
+    this._option_callback = f;
+  }
+
+  get option_callback() {
+    return this._option_callback;
   }
 
   set callback(f) {

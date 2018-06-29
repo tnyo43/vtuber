@@ -53,7 +53,6 @@
     stag.recognizer_active = true;
     stag.comp_active = true;
     let log = (x) => {
-      console.log(x);
       stag.comp_speak(x);
     }
     stag.callback = log;
@@ -71,6 +70,10 @@
     vtag.callback = callback;
     vtag.self_active = true;
     vtag2.comp_active = true;
+
+    vtag.option_callback = (k, v) => {
+      vtag2.set_texture(k, v);
+    }
  </script>
 </body>
 </html>
