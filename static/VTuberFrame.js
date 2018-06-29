@@ -55,19 +55,25 @@ export default class VTuberFrame extends HTMLElement{
           left: 0;
         }
 
-        .op-btn {
+        #op-btn {
           z-index: 2;
           position: absolute;
           right: 0;
           top: 0;
-          color: red;
+          background-color: white;
+          height: 30px;
+          width: 30px;
+          font-size: 20px;
+          text-align:center;
+          font-weight: bold;
+          border-style: solid;
         }
       </style>
 
       <div id="display-container">
         <video id="video"></video>
         <div id="canvas-div">
-          <div class="op-btn">x</div>
+          <div id="op-btn">x</div>
         </div>
         <div id="option">
           <div id="option-bg">
@@ -92,8 +98,14 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.option = this.shadowRoot.getElementById("option");
     this.op_btn = this.shadowRoot.getElementById("op-btn");
+    this.op_btn.addEventListener("click", (event) => {
+      if (this.option.style.display != "none") {
+        this.option.style.display = "none";
+      } else {
+        this.option.style.display = "flex";
+      }
+    });
     this.shadowRoot.getElementById("canvas-div").insertBefore(this.canvas, this.op_btn);
-
 
     this.bg_container = null;
     this.face_container = null; 
@@ -174,8 +186,11 @@ export default class VTuberFrame extends HTMLElement{
       }
       if (this.self_active){
         this.option.style.display = "flex";
+        this.op_btn.style.display = "inline";
       } else {
         this.option.style.display = "none";
+        console.log(this.op_btn)
+        this.op_btn.style.display = "none";
       }
     }
 
@@ -230,6 +245,7 @@ export default class VTuberFrame extends HTMLElement{
     this.set_points = (points) => {
       if (this.comp_active) {
         this.points = points;
+        this.plot_face();
       } else {
         return;
       }
@@ -253,9 +269,9 @@ export default class VTuberFrame extends HTMLElement{
               this.points = this.ctrack.getCurrentPosition()
               if (this.points){
                 this.plot_face();
-              }
-              if (this.callback != null) {
-                this.callback(this.points);
+                if (this.callback != null) {
+                  this.callback(this.points);
+                }
               }
             }
             if (this.self_active) {
