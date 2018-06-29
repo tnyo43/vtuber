@@ -122,7 +122,9 @@ export default class VTuberFrame extends HTMLElement{
           this.face_sprite = new PIXI.Sprite(this.texture);
           this.face_sprite.height = 1000;
           this.face_sprite.width = 1000;
-          this.stage.addChild(this.face_sprite);
+          if (this.bg_sprite != null) {
+            this.stage.addChild(this.face_sprite);
+          }
         } else {
           this.face_sprite.setTexture(this.texture);
         }
@@ -137,6 +139,9 @@ export default class VTuberFrame extends HTMLElement{
           this.bg_sprite.height = this.HEIGHT;
           this.bg_sprite.width = this.WIDTH;
           this.stage.addChild(this.bg_sprite);
+          if (this.face_sprite != null) {
+            this.stage.addChild(this.face_sprite);
+          }
         } else {
           this.bg_sprite.setTexture(this.bg_texture);
         }
@@ -189,7 +194,6 @@ export default class VTuberFrame extends HTMLElement{
         this.op_btn.style.display = "inline";
       } else {
         this.option.style.display = "none";
-        console.log(this.op_btn)
         this.op_btn.style.display = "none";
       }
     }
@@ -221,18 +225,19 @@ export default class VTuberFrame extends HTMLElement{
     this.draw_request = null;
 
     this.plot_face = () => {
+      var points = this.points;
       this.face_sprite.position.x = 0;
       this.face_sprite.position.y = 0;
       var n = this.points_index.length;
       for (var i = 0; i < n; i++) {
-        var point = this.points[this.points_index[i]];
+        var point = points[this.points_index[i]];
         this.face_sprite.position.x += point[0]/n;
         this.face_sprite.position.y += point[1]/n;
       }
-      if (this.points[this.LEFT] != undefined) {
-        var fw = this.distance(this.points[this.LEFT], this.points[this.RIGHT]);
-        var fh = this.distance(this.points[this.CHIN], this.points[this.NOUSE])*2;
-        var r = this.rotate(this.points[this.LEFT], this.points[this.RIGHT], this.points[this.BROW], this.points[this.CHIN]);
+      if (points[this.LEFT] != undefined) {
+        var fw = this.distance(points[this.LEFT], points[this.RIGHT]);
+        var fh = this.distance(points[this.CHIN], points[this.NOUSE])*2;
+        var r = this.rotate(points[this.LEFT], points[this.RIGHT], points[this.BROW], points[this.CHIN]);
         this.face_sprite.width = fw;
         this.face_sprite.height = fh;
         this.face_sprite.anchor.x = 0.5;

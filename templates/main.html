@@ -53,6 +53,7 @@
     stag.recognizer_active = true;
     stag.comp_active = true;
     let log = (x) => {
+      console.log(x);
       stag.comp_speak(x);
     }
     stag.callback = log;
@@ -64,7 +65,7 @@
     }
 
     vtag.bg_src = 'static/img/background.jpg';
-    vtag.src = 'static/img/dedenne.png';
+    vtag.src = 'static/img/nene.png';
     vtag2.src = 'static/img/nene.png';
     vtag2.bg_src = 'static/img/cojtroom.jpg';
     vtag.callback = callback;
