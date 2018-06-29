@@ -10,11 +10,18 @@ export default class VTuberFrame extends HTMLElement{
       <style>
         #display-container {
           display: flex;
-          width: 900px;
+          width: 600px;
           height: 400px;
+          position: relative;
         }
+
         #option {
-          display: flex;
+          display: none;
+          position: absolute;
+          height: 400px;
+          width: 300px;
+          z-index: 2;
+          right: 0px;
         }
 
         #video {
@@ -45,10 +52,6 @@ export default class VTuberFrame extends HTMLElement{
 
         }
 
-        #canvas-div {
-          position: relative;
-        }
-
         canvas {
           position: relative;
           top: 0;
@@ -56,11 +59,12 @@ export default class VTuberFrame extends HTMLElement{
         }
 
         #op-btn {
-          z-index: 2;
+          display: none;
+          z-index: 3;
           position: absolute;
           right: 0;
           top: 0;
-          background-color: white;
+          background-color: rgb(255,255,255,0.8);
           height: 30px;
           width: 30px;
           font-size: 20px;
@@ -68,13 +72,22 @@ export default class VTuberFrame extends HTMLElement{
           font-weight: bold;
           border-style: solid;
         }
+
+        #white-screen {
+          display: none;
+          z-index: 1;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 600px;
+          height: 400px;
+          background-color: rgb(255,255,255,0.5);
+        }
       </style>
 
       <div id="display-container">
         <video id="video"></video>
-        <div id="canvas-div">
-          <div id="op-btn">x</div>
-        </div>
+        <div id="op-btn">x</div>
         <div id="option">
           <div id="option-bg">
             <div class="option-title">背景</div>
@@ -85,6 +98,7 @@ export default class VTuberFrame extends HTMLElement{
             <div id="face-container"></div>
           </div>
         </div>
+        <div id="white-screen"></div>
       </div>
     `;
 
@@ -98,14 +112,18 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.option = this.shadowRoot.getElementById("option");
     this.op_btn = this.shadowRoot.getElementById("op-btn");
+    this.white_screen = this.shadowRoot.getElementById("white-screen");
     this.op_btn.addEventListener("click", (event) => {
-      if (this.option.style.display != "none") {
-        this.option.style.display = "none";
-      } else {
+      console.log(this.option.style.display)
+      if (this.option.style.display == "none" || this.option.style.display == "") {
+        this.white_screen.style.display = "inline";
         this.option.style.display = "flex";
+      } else {
+        this.white_screen.style.display = "none";
+        this.option.style.display = "none";
       }
     });
-    this.shadowRoot.getElementById("canvas-div").insertBefore(this.canvas, this.op_btn);
+    this.container.insertBefore(this.canvas, this.op_btn);
 
     this.bg_container = null;
     this.face_container = null; 
@@ -189,6 +207,10 @@ export default class VTuberFrame extends HTMLElement{
           this.face_textures.push(texture);
         }
       }
+      if (this.self_active) {
+        this.op_btn.style.display = "inline";
+      }
+      /*
       if (this.self_active){
         this.option.style.display = "flex";
         this.op_btn.style.display = "inline";
@@ -196,6 +218,7 @@ export default class VTuberFrame extends HTMLElement{
         this.option.style.display = "none";
         this.op_btn.style.display = "none";
       }
+      */
     }
 
     this.callback = null;
