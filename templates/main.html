@@ -52,10 +52,10 @@
     let stag = document.getElementById("speakertag");
     stag.recognizer_active = true;
     stag.comp_active = true;
-    let log = (x) => {
-      stag.comp_speak(x);
+    stag.callback = (text, voice, pitch, rate) => {
+      // WEBSOCKETR_SEND(text, voice, pitch, rate);
+      console.log(text, voice, pitch, rate);
     }
-    stag.callback = log;
 
     let vtag = document.getElementById('vtubertag');
     let vtag2 = document.getElementById('vtubertag2');

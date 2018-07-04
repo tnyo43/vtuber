@@ -1,5 +1,5 @@
 import Recognizer from "./Recognizer.js";
-import Speaker from "./Speaker.js";
+// import Speaker from "./Speaker.js";
 
 export default class SpeakerTag extends HTMLElement{
   constructor() {
@@ -18,8 +18,7 @@ export default class SpeakerTag extends HTMLElement{
       `;
 
     this.recognizer = new Recognizer();
-    this.recognizer.set_speaker(null);
-    this.comp_speaker = new Speaker();
+    this.callback = null;
 
     this.canvas = this.shadowRoot.getElementById("recording");
     this.context = this.canvas.getContext("2d");
@@ -29,17 +28,6 @@ export default class SpeakerTag extends HTMLElement{
     this.show_stop_recording();
     this.set_keydown();
     this.recognizer_active = false;
-    this.comp_active = false;
-
-    this.comp_speak = (text) => {
-      if (this.comp_active == false) {
-        return;
-      } else {
-        this.comp_speaker.speak(text);
-      }
-    }
-
-    this.callback = null;
   }
 
   set recognizer_active (b) {
@@ -55,21 +43,24 @@ export default class SpeakerTag extends HTMLElement{
     return this._recognizer_active;
   }
 
-  set comp_active (b) {
-    this._comp_active = b;
-  }
-
-  get comp_active () {
-    return this._comp_active;
-  }
-
   set callback (f) {
     this._callback = f;
-    this.recognizer.callback = this._callback;
+    this.recognizer.callback = (text) => {
+       this.text = text;
+    };
   }
 
   get callback () {
     return this._callback;
+  }
+
+  set text(text) {
+    //TODO set voice pitch, rate to callback
+    this.callback(text, 1,1,1)
+  }
+
+  get text() {
+    return "";
   }
 
   set_keydown() {
