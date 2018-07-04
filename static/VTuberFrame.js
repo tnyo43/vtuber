@@ -4,6 +4,16 @@ var IMG_DIR = "./static/img/";
 const FACE_KEY = "FACE";
 const BG_KEY = "BG";
 
+const RIGHT = 1;
+const LEFT  = 13;
+const CHIN  = 7;
+const BROW  = 33;
+const NOUSE = 62;
+const POINT_INDEX = [RIGHT, LEFT, CHIN, BROW, NOUSE];
+
+const WIDTH = 600;
+const HEIGHT = 400;
+
 export default class VTuberFrame extends HTMLElement{
   constructor() {
     super();
@@ -116,13 +126,10 @@ export default class VTuberFrame extends HTMLElement{
       </div>
     `;
 
-    this.WIDTH = 600;
-    this.HEIGHT = 400;
-
     this.container = this.shadowRoot.getElementById("display-container");
     this.video = this.shadowRoot.getElementById("video");
     this.stage = new PIXI.Stage(0x000000);
-    this.renderer = PIXI.autoDetectRenderer(this.WIDTH, this.HEIGHT);
+    this.renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT);
     this.canvas = this.renderer.view;
     this.option = this.shadowRoot.getElementById("option");
     this.op_btn = this.shadowRoot.getElementById("op-btn");
@@ -166,8 +173,8 @@ export default class VTuberFrame extends HTMLElement{
         this.bg_texture = texture;
         if (this.bg_sprite == null) {
           this.bg_sprite = new PIXI.Sprite(this.bg_texture);
-          this.bg_sprite.height = this.HEIGHT;
-          this.bg_sprite.width = this.WIDTH;
+          this.bg_sprite.height = HEIGHT;
+          this.bg_sprite.width = WIDTH;
           this.stage.addChild(this.bg_sprite);
           if (this.face_sprite != null) {
             this.stage.addChild(this.face_sprite);
@@ -262,38 +269,30 @@ export default class VTuberFrame extends HTMLElement{
     this.bg_src = null;
     this.bg_texture = null;
     this.bg_sprite = null;
-  
+
     // 顔のテクスチャ
     this.texture = null;
     this.src = null;
     this.face_sprite = null;
     this.points = null;
 
-
-    this.RIGHT = 1;
-    this.LEFT  = 13;
-    this.CHIN  = 7;
-    this.BROW  = 33;
-    this.NOUSE = 62;
-    this.points_index = [this.RIGHT, this.LEFT, this.CHIN, this.BROW, this.NOUSE];
-
     this.ctrack = new clm.tracker();
     this.draw_request = null;
 
     this.plot_face = () => {
       var points = this.points;
-      this.face_sprite.position.x = 0;
+      this.face_sprite.position.x = WIDTH;
       this.face_sprite.position.y = 0;
-      var n = this.points_index.length;
+      var n = POINT_INDEX.length;
       for (var i = 0; i < n; i++) {
-        var point = points[this.points_index[i]];
-        this.face_sprite.position.x += point[0]/n;
+        var point = points[POINT_INDEX[i]];
+        this.face_sprite.position.x -= point[0]/n;
         this.face_sprite.position.y += point[1]/n;
       }
-      if (points[this.LEFT] != undefined) {
-        var fw = this.distance(points[this.LEFT], points[this.RIGHT]);
-        var fh = this.distance(points[this.CHIN], points[this.NOUSE])*2;
-        var r = this.rotate(points[this.LEFT], points[this.RIGHT], points[this.BROW], points[this.CHIN]);
+      if (points[LEFT] != undefined) {
+        var fw = this.distance(points[LEFT], points[RIGHT]);
+        var fh = this.distance(points[CHIN], points[NOUSE])*2;
+        var r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
         this.face_sprite.width = fw;
         this.face_sprite.height = fh;
         this.face_sprite.anchor.x = 0.5;
@@ -360,6 +359,8 @@ export default class VTuberFrame extends HTMLElement{
       comp_loop();
     }
     this.set_option();
+    this.set_texture(FACE_KEY, 0);
+    this.set_texture(BG_KEY, 0);
   }
 
   set option_callback(f) {
