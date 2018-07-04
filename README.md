@@ -21,6 +21,12 @@ webkitSpeechRecognitionで音声をテキストに変換する。 　　　
 ## Usage
 
 ### VtuberFrame
+VTuberFrame.jsファイルを開き、
+
+var IMG_DIR = "./static/img/";↲
+を、自分が画像を保存しているフォルダのパスに書き換える。最後の"/"を忘れないようにする。
+var IMG_DIR = "./YOUR_IMAGE_PATH/";
+
 htmlファイルで
 ```
 <script type="module" src="/static/VTuberFrame.js"></script>
@@ -31,22 +37,55 @@ htmlファイルで
 を呼び出し、bodyで、
 ```
 <video id="video"></video> <!-- 撮影をするために必要 -->
-<vtuber-frame id="vtubertag"></vtuber-frame>
+<vtuber-frame id="vtubertag1"></vtuber-frame>
+<vtuber-frame id="vtubertag2"></vtuber-frame>
 <script type="module">
   import VTuberFrame from './static/VTuberFrame.js'
 
-  let vtag = document.getElementById('vtubertag');
-  vtag.src = 'static/img/dedenne.png';
+  /// 自分の顔を写すウィンドウとしてvtag1を使う
+  let vtag1 = document.getElementById('vtubertag1');
+  vtag1.self_active = true;
+  
+  
+  /// 相手側の顔を写すウィンドウとしてvtag2を使う
+  let vtag2 = document.getElementById('vtubertag2');
+  vtag2.comp_active = true;↲
+  
   
   /// もしコールバック関数を設定したいなら
   /// 変数xは顔の情報を持つ71点の配列
-  let callback = (x) => {
-      console.log(x);
+  /// ウェブソケットで点の情報を送るときもこれをつかう
+  /*
+  let callback = (points) => {
+      console.log(points);
+      WEBSOCKET_SEND_MESSAGE(points)
   }
-  vtag.callback = callback;
+  vtag1.callback = callback;
+  */
   
-  /// VTuberFrameを起動する。
-  vtag.self_active = true;
+  /// ウェブソケットで話し相手の点情報を受け取り、相手側のウィンドウで表示したいとき
+  /// vtag2.set_points(points)を使う
+  /*
+  WEBSOCKET_GET_MESSAGE(points) {
+    vtag2.set_points(points);
+  }
+  */
+  
+  ///　背景や顔のスキンを変更した時に使うコールバック
+  /// 画面横のオプションで更新するたびに呼び出される。
+  /*
+  vtag1.option_callback = (key, value) => {↲
+    console.log(key, value);
+    WEBSOCKET_SEND_MESSAGE(key, value);
+  }↲
+  */
+  
+  /// 相手の背景や顔のスキンが変更した時に使うコールバック
+  /*
+  WEBSOCKET_GET_MESSAGE(key, value) {
+    vtag2.set_texture(key, value);
+  }
+  */
 </script>
 ```
 とすると使える
