@@ -10,11 +10,50 @@ export default class SpeakerTag extends HTMLElement{
     this.shadowRoot.innerHTML = `
         <style>
           .canv {
-            height: 20px;
-            width: 20px;
+            height: 100px;
+            width: 100px;
+          }
+
+          #container {
+            background-color: gray;
+            height: 100px;
+            width: 200px;
+            display: flex;
+          }
+
+          #icon-div {
+            flex-grow: 1;
+            flex-basis: 50%;
+          }
+
+          #slider-div {
+            flex-grow: 2;
+            flex-basis: 30%;
+            width: 300px;
+          }
+
+          input {
+            width: 120px;
+          }
+
+          #voice {
+            width: 120px;
           }
         </style>
-        <canvas class="canv" id="recording"/>
+        <div id="container">
+          <div id="icon-div">
+          <canvas class="canv" id="recording"></canvas>
+          </div>
+          <div id="slider-div">
+            <input type="range" id="rate">
+            <input type="range" id="pitch">
+            <select id="voice">
+              <option value="0">男</option>
+              <option value="1">女</option>
+              <option value="2">子供</option>
+            </select>
+          </div>
+        </div>
       `;
 
     this.recognizer = new Recognizer();
@@ -28,6 +67,10 @@ export default class SpeakerTag extends HTMLElement{
     this.show_stop_recording();
     this.set_keydown();
     this.recognizer_active = false;
+    
+    this.voice_select = this.shadowRoot.getElementById("voice");
+    this.pitch_range = this.shadowRoot.getElementById("pitch");
+    this.rate_range = this.shadowRoot.getElementById("rate");
   }
 
   set recognizer_active (b) {
@@ -46,7 +89,11 @@ export default class SpeakerTag extends HTMLElement{
   set callback (f) {
     this._callback = f;
     this.recognizer.callback = (text) => {
-       this.text = text;
+      this.text = text;
+      let v = this.voice_select.value;
+      let p = this.pitch_range.value;
+      let r = this.rate_range.value;
+      console.log(this.text, v, p, r);
     };
   }
 
@@ -56,7 +103,7 @@ export default class SpeakerTag extends HTMLElement{
 
   set text(text) {
     //TODO set voice pitch, rate to callback
-    this.callback(text, 1,1,1)
+    this.callback(text, 1,1,1);
   }
 
   get text() {
