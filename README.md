@@ -22,10 +22,16 @@ webkitSpeechRecognitionで音声をテキストに変換する。 　　　
 
 ### VtuberFrame
 VTuberFrame.jsファイルを開き、
-
-var IMG_DIR = "./static/img/";↲
+```
+var IMG_DIR = "./static/img/";
+```
 を、自分が画像を保存しているフォルダのパスに書き換える。最後の"/"を忘れないようにする。
+```
 var IMG_DIR = "./YOUR_IMAGE_PATH/";
+```
+また、画像ファイルは背景を「./YOUR_IMAGE_PATH/background/bg000.jpg」、
+顔を「./YOUR_IMAGE_PATH/face/face000.png」の形式で保存する。
+数字は000から3桁で連番にする。
 
 htmlファイルで
 ```
