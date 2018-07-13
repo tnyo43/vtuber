@@ -40,13 +40,13 @@ export default class SpeakerTag extends HTMLElement{
             width: 120px;
           }
         </style>
-        <div id="container">
+        <div id="container" class="speaker-tag-container">
           <div id="icon-div">
-          <canvas class="canv" id="recording"></canvas>
+            <canvas class="canv" id="recording"></canvas>
           </div>
-          <div id="slider-div">
-            <input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
-            <input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
+          <div id="slider-div" class="speaker-tag-sliders">
+            <input class="speaker-tag-slider" type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
+            <input class="speaker-tag-slider" type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
             <select id="voice">
               <option value="0">男</option>
               <option value="1">女</option>
@@ -114,7 +114,7 @@ export default class SpeakerTag extends HTMLElement{
     document.addEventListener('keydown', (event) => {
         const keyName = event.key;
         if (keyName === " ") {
-          if (this.recognizer_active) {
+          if (this.recognizer_active && !this.recognizer.is_recognizing) {
             this.recognizer.start();
             this.show_recording();
             this.recognizer.flag_speech = true;
