@@ -45,8 +45,8 @@ export default class SpeakerTag extends HTMLElement{
           <canvas class="canv" id="recording"></canvas>
           </div>
           <div id="slider-div">
-            <input type="range" id="rate">
-            <input type="range" id="pitch">
+            <input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
+            <input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
             <select id="voice">
               <option value="0">男</option>
               <option value="1">女</option>
@@ -67,7 +67,7 @@ export default class SpeakerTag extends HTMLElement{
     this.show_stop_recording();
     this.set_keydown();
     this.recognizer_active = false;
-    
+
     this.voice_select = this.shadowRoot.getElementById("voice");
     this.pitch_range = this.shadowRoot.getElementById("pitch");
     this.rate_range = this.shadowRoot.getElementById("rate");
