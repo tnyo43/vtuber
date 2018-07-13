@@ -1,8 +1,5 @@
-import Speaker from './Speaker.js';
-
 export default class {
   constructor() {
-    this.speaker = null;
     this.recognition = null;
     this.start_function = null;
     this.stop_function = null;
@@ -19,14 +16,6 @@ export default class {
 
   get callback () {
     return this._callback;
-  }
-
-  set_speaker(speaker) {
-    if (speaker != null) {
-      this.speaker = speaker;
-    } else {
-      this.speaker = new Speaker();
-    }
   }
 
   set_event_functions(start, stop) {
@@ -64,11 +53,10 @@ export default class {
     this.recognition.onresult = (e) => {
       console.log("result")
       if(e.results.length > 0){
-        var value = e.results[0][0].transcript;
-        console.log("result is \"" + value + "\"")
-        if (this.speaker != null) {
-          this.speaker.speak(value);
-          this.callback(value);
+        var text = e.results[0][0].transcript;
+        console.log("result is \"" + text + "\"")
+        if (this.callback != null) {
+          this.callback(text);
         }
       }
     }
