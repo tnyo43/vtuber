@@ -228,11 +228,12 @@ export default class VTuberFrame extends HTMLElement{
       if (this.face_container == null) {
         this.face_container = this.shadowRoot.getElementById("face-container");
 
-        const num = 4;
+        const num = 2;
         for (var i = 0; i < num; i++) {
           const image = new Image();
           const j = i;
-          const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
+          // const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
+          const filename = IMG_DIR + 'face/img' +('000' + i).slice(-3) + "0.png"
           image.addEventListener("click", ()=>{
             this.set_face_texture(this.face_textures[j]);
             for (var k = 0; k < num; k++) {
