@@ -393,8 +393,10 @@ export default class VTuberFrame extends HTMLElement{
     this.lipsynch_interval = 3000;
 
     this.lipsynch_start = (time) => {
-      this.lipsynch_interval = time;
-      this.lipsynch_active = true;
+      if (!this.lipsynch_active) {
+        this.lipsynch_interval = time;
+        this.lipsynch_active = true;
+      }
     }
   }
 
@@ -410,7 +412,7 @@ export default class VTuberFrame extends HTMLElement{
   }
 
   get lipsynch_active() {
-    return this._lipsynch_active != 0;;
+    return this._lipsynch_active;
   }
 
   set option_callback(f) {
