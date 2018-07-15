@@ -390,19 +390,27 @@ export default class VTuberFrame extends HTMLElement{
       };
       lipsynch_loop();
     }
+    this.lipsynch_interval = 3000;
+
+    this.lipsynch_start = (time) => {
+      this.lipsynch_interval = time;
+      this.lipsynch_active = true;
+    }
   }
 
   set lipsynch_active(active) {
     this._lipsynch_active = active;
     if (active) {
-      this.lipsynch()
+      this.lipsynch(this.lipsynch_interval);
+      let lipsynch_deactive = () => { this.lipsynch_active = false; }
+      setTimeout(lipsynch_deactive, this.lipsynch_interval);
     } else {
       // 口パクオフ
     }
   }
 
   get lipsynch_active() {
-    return this._lipsynch_active;;
+    return this._lipsynch_active != 0;;
   }
 
   set option_callback(f) {

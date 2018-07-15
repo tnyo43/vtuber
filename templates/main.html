@@ -41,6 +41,7 @@
       <video id="video"></video>
       <speaker-tag id="speakertag"></speaker-tag>
       <vtuber-frame id="vtubertag"></vtuber-frame>
+      <div id="lipbtn">lipsynch</div>
       <vtuber-frame id="vtubertag2"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
@@ -64,6 +65,9 @@
       vtag2.set_points(x);
     }
 
+    document.getElementById("lipbtn").onclick = () => {
+      vtag.lipsynch_start(1000);
+    }
     /*
     vtag.bg_src = 'static/img/background.jpg';
     vtag.src = 'static/img/nene.png';
