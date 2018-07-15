@@ -375,22 +375,27 @@ export default class VTuberFrame extends HTMLElement{
     this.set_texture(FACE_KEY, 0);
     this.set_texture(BG_KEY, 0);
 
-    this.lipsynch_active = () => {
-      let mode = 0;
-      let lisynch_loop = () => {
-        mode = 1-mode;
-        this.set_face_texture(this.face_textures[this.face_idx][mode]);
-      }
-      if (this.lipsynch_active) {
-        
-      }
+
+    this.lip_mode = 0;
+    this.lipsynch = () => {
+      let lipsynch_loop = () => {
+        this.lip_mode = 1-this.lip_mode;
+        if (this.lipsynch_active) {
+          this.set_face_texture(this.face_textures[this.face_idx][this.lip_mode]);
+          setTimeout(lipsynch_loop, 200);
+        } else {
+          this.lip_mode = 0;
+          this.set_face_texture(this.face_textures[this.face_idx][0]);
+        }
+      };
+      lipsynch_loop();
     }
   }
 
   set lipsynch_active(active) {
     this._lipsynch_active = active;
     if (active) {
-      // 口パクモード
+      this.lipsynch()
     } else {
       // 口パクオフ
     }
