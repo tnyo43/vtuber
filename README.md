@@ -58,7 +58,7 @@ htmlファイルで
   /*
   let callback = (points) => {
       console.log(points);
-      WEBSOCKET_SEND_MESSAGE(points)
+      WEBSOCKET_SEND_MESSAGE1(points)
   }
   vtag1.callback = callback;
   */
@@ -76,16 +76,28 @@ htmlファイルで
   /*
   vtag1.option_callback = (key, value) => {↲
     console.log(key, value);
-    WEBSOCKET_SEND_MESSAGE(key, value);
+    WEBSOCKET_SEND_MESSAGE2(key, value);
   }↲
   */
   
   /// 相手の背景や顔のスキンが変更した時に使うコールバック
   /*
-  WEBSOCKET_GET_MESSAGE(key, value) {
+  WEBSOCKET_GET_MESSAGE1(key, value) {
     vtag2.set_texture(key, value);
   }
   */
+  
+  /// 音声のデータが与えられた時、口パクする
+  /// audioタグのduration属性で再生時間を得て、lipsynch_startで口パク開始
+  WEBSOCKET_GET_MESSAGE2(src) {
+    audio.SET_SOURCE(src)
+    if (speak) {
+        vtag.lipsynch_start(audio.duration*1000);
+    } else {
+        vtag2.lipsynch_start(audio.duration*1000);
+    }
+    audio.play();
+  }
 </script>
 ```
 とすると使える
