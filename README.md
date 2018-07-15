@@ -101,18 +101,15 @@ htmlファイルで
 <speaker-tag id="speakertag"></speaker-tag>
 
 <script type="module">
+let stag = document.getElementById("speakertag");
+stag.recognizer_active = true;
+stag.comp_active = true;
 
-  let stag = document.getElementById("speakertag");
-  
-  /// もしコールバック関数を設定したいなら
-  /// 変数xは認識した文字列
-  let callback = (x) => {
-    console.log(x);
-  }
-  stag.callback = callback;
-
-　　　　/// SpeakerTagを起動する。
-  stag.recognizer_active = true;
- </script>
+stag.callback = (text, voice, pitch, rate) => {
+  // WEBSOCKETR_SEND(text, voice, pitch, rate);
+  console.log(text, voice, pitch, rate);
+}
 ```
 スペースキーで音声認識が開始し、qキーで停止する。
+
+音声認識が行われるとcallback関数が呼び出されるので、いい感じに実装するとサーバに送ったりできる。
