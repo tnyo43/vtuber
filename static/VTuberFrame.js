@@ -230,7 +230,7 @@ export default class VTuberFrame extends HTMLElement{
       if (this.face_container == null) {
         this.face_container = this.shadowRoot.getElementById("face-container");
 
-        const num = 2;
+        const num = 4;
         for (var i = 0; i < num; i++) {
           const image = new Image();
           const j = i;
