@@ -42,6 +42,7 @@
       <speaker-tag id="speakertag"></speaker-tag>
       <vtuber-frame id="vtubertag"></vtuber-frame>
       <div id="lipbtn">lipsynch</div>
+      <audio src="/static/musicbox.mp3" id="audio"></audio>
       <vtuber-frame id="vtubertag2"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
@@ -66,8 +67,12 @@
     }
 
     document.getElementById("lipbtn").onclick = () => {
-      vtag.lipsynch_start(1000);
+      vtag.lipsynch_start(audio.duration*1000);
+      audio.play();
     }
+
+    let audio = document.getElementById("audio");
+
     /*
     vtag.bg_src = 'static/img/background.jpg';
     vtag.src = 'static/img/nene.png';
