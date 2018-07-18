@@ -145,6 +145,8 @@ export default class VTuberFrame extends HTMLElement{
     });
     this.container.insertBefore(this.canvas, this.op_btn);
 
+    // 口パク
+    this.lipsynch_actve = false;
 
     this.bg_container = null;
     this.face_container = null; 
@@ -187,7 +189,7 @@ export default class VTuberFrame extends HTMLElement{
 
     this.set_texture = (key, value) => {
       if (key == FACE_KEY) {
-        this.set_face_texture(this.face_textures[value]);
+        this.set_face_texture(this.face_textures[value][0]);
       } else if (key == BG_KEY) {
         this.set_bg_texture(this.bg_textures[value]);
       }
@@ -232,17 +234,20 @@ export default class VTuberFrame extends HTMLElement{
         for (var i = 0; i < num; i++) {
           const image = new Image();
           const j = i;
-          const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
+
+          // 口が閉じている顔と開いている顔のセット
+          let faces = []
+
+          // 閉じている顔、デフォルト
+          let filename = IMG_DIR + 'face/img' +('000' + i).slice(-3) + "0.png"
           image.addEventListener("click", ()=>{
-            this.set_face_texture(this.face_textures[j]);
-            for (var k = 0; k < num; k++) {
-              this.face_container.children[k].classList.remove("selected-icon");
-            }
+            this.set_face_texture(this.face_textures[j][0]);
+            this.face_container.children[this.face_idx].classList.remove("selected-icon");
             image.classList.add("selected-icon");
             if (this.option_callback != null) {
               var key = FACE_KEY;
-              var val = j;
-              this.option_callback(key, val);
+              this.face_idx = j;
+              this.option_callback(key, this.face_idx);
             }
           }); 
           image.src = filename;
@@ -251,7 +256,14 @@ export default class VTuberFrame extends HTMLElement{
           image.classList.add("icon");
           this.face_container.appendChild(image);
           var texture = PIXI.Texture.fromImage(filename);
-          this.face_textures.push(texture);
+          faces.push(texture)
+
+          // 開いている顔
+          filename = IMG_DIR + 'face/img' + ('000' + i).slice(-3) + "1.png";
+          texture = PIXI.Texture.fromImage(filename);
+          faces.push(texture)
+
+          this.face_textures.push(faces);
         }
       }
       if (this.self_active) {
@@ -272,6 +284,7 @@ export default class VTuberFrame extends HTMLElement{
 
     // 顔のテクスチャ
     this.texture = null;
+    this.face_idx = 0;
     this.src = null;
     this.face_sprite = null;
     this.points = null;
@@ -361,6 +374,45 @@ export default class VTuberFrame extends HTMLElement{
     this.set_option();
     this.set_texture(FACE_KEY, 0);
     this.set_texture(BG_KEY, 0);
+
+
+    this.lip_mode = 0;
+    this.lipsynch = () => {
+      let lipsynch_loop = () => {
+        this.lip_mode = 1-this.lip_mode;
+        if (this.lipsynch_active) {
+          this.set_face_texture(this.face_textures[this.face_idx][this.lip_mode]);
+          setTimeout(lipsynch_loop, 200);
+        } else {
+          this.lip_mode = 0;
+          this.set_face_texture(this.face_textures[this.face_idx][0]);
+        }
+      };
+      lipsynch_loop();
+    }
+    this.lipsynch_interval = 3000;
+
+    this.lipsynch_start = (time) => {
+      if (!this.lipsynch_active) {
+        this.lipsynch_interval = time;
+        this.lipsynch_active = true;
+      }
+    }
+  }
+
+  set lipsynch_active(active) {
+    this._lipsynch_active = active;
+    if (active) {
+      this.lipsynch(this.lipsynch_interval);
+      let lipsynch_deactive = () => { this.lipsynch_active = false; }
+      setTimeout(lipsynch_deactive, this.lipsynch_interval);
+    } else {
+      // 口パクオフ
+    }
+  }
+
+  get lipsynch_active() {
+    return this._lipsynch_active;
   }
 
   set option_callback(f) {

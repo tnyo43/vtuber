@@ -26,7 +26,8 @@
         #vtubertag {
           width: 100;
         }
-    </style>
+   </style>
+   <link rel="stylesheet" type="text/css" href="static/css/Speaker.css">
 </head>
 <body>
 
@@ -41,6 +42,8 @@
       <video id="video"></video>
       <speaker-tag id="speakertag"></speaker-tag>
       <vtuber-frame id="vtubertag"></vtuber-frame>
+      <div id="lipbtn">lipsynch</div>
+      <audio src="/static/musicbox.mp3" id="audio"></audio>
       <vtuber-frame id="vtubertag2"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
@@ -63,6 +66,14 @@
     let callback = (x) => {
       vtag2.set_points(x);
     }
+
+    document.getElementById("lipbtn").onclick = () => {
+      vtag.lipsynch_start(audio.duration*1000);
+      vtag2.lipsynch_start(audio.duration*1000);
+      audio.play();
+    }
+
+    let audio = document.getElementById("audio");
 
     /*
     vtag.bg_src = 'static/img/background.jpg';

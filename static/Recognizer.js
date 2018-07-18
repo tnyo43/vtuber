@@ -3,7 +3,11 @@ export default class {
     this.recognition = null;
     this.start_function = null;
     this.stop_function = null;
+<<<<<<< HEAD
     this.is_rocognizing = false;
+=======
+    this.is_recognizing = false;
+>>>>>>> 39eb527016694f2345d47e84709539e1b1e07cb3
 
     this.flag_speech = false;
     this.flag_result = false;
@@ -17,6 +21,14 @@ export default class {
 
   get callback () {
     return this._callback;
+  }
+
+  set is_recognizing (r) {
+    this._is_recognizing = r;
+  }
+
+  get is_recognizing () {
+    return this._is_recognizing;
   }
 
   set_event_functions(start, stop) {
