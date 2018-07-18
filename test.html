@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <title>点击</title>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        select{
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding: 0;
+            margin: 0;
+            height: 30px;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+            padding: 0 40px 0 10px;
+            border: 1px solid #ccc;
+            color: #FF5959;
+        }
+        select::-ms-expand {
+            display: none;
+        }
+        .selectWrap{
+            position: relative;
+            display: inline-block;
+            background-color: #333333;
+
+        }
+        .selectWrap::before{
+            content: '';
+            position: absolute;
+            z-index: 0;
+            top: 0;
+            right: 0;
+            background: #ccc;
+            height: 100%;
+            width: 30px;
+        }
+        .selectWrap::after{
+            content: '';
+            position: absolute;
+            z-index: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto 0;
+            right: 9px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 6px 0 6px;
+            border-color: #FF5959 transparent transparent transparent;
+        }
+        .fa{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="selectWrap">
+    <i class="fa fa-home fa-fw"></i>
+    <select name="" id="">
+        <option value="">001</option>
+        <option value="">002</option>
+        <option value="">003</option>
+    </select>
+</div>
+<script>
+
+
+</script>
+</body>
+</html>

@@ -3,6 +3,7 @@ export default class {
     this.recognition = null;
     this.start_function = null;
     this.stop_function = null;
+    this.is_rocognizing = false;
 
     this.flag_speech = false;
     this.flag_result = false;
@@ -24,6 +25,7 @@ export default class {
   }
 
   start(){
+    this.is_recognizing = true;
     this.recognition = new webkitSpeechRecognition();
     this.recognition.lang = "ja-JP";
     this.recognition.start();
@@ -63,6 +65,7 @@ export default class {
   }
 
   stop(){
+    this.is_recognizing = false;
     if (this.stop_function != null) {
       this.stop_function();
     }
