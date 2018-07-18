@@ -144,7 +144,6 @@ export default class SpeakerTag extends HTMLElement{
         </style>
         <div id="container" class="speaker-tag-container">
           <div id="icon-div">
-<<<<<<< HEAD
           <canvas class="canv" id="recording"></canvas>
            <input type="button" id="record-btn" value="record"></input>
           </div>
@@ -155,13 +154,6 @@ export default class SpeakerTag extends HTMLElement{
              </div>
             <div id="selectW">
            
-=======
-            <canvas class="canv" id="recording"></canvas>
-          </div>
-          <div id="slider-div" class="speaker-tag-sliders">
-            <input class="speaker-tag-slider" type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
-            <input class="speaker-tag-slider" type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
->>>>>>> 39eb527016694f2345d47e84709539e1b1e07cb3
             <select id="voice">
               <option value="0">男</option>
               <option value="1">女</option>
