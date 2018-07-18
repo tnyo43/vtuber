@@ -9,7 +9,6 @@ export default class SpeakerTag extends HTMLElement{
     this.attachShadow({mode: "open"}); 
     this.shadowRoot.innerHTML = `
         <style>
-       
           .canv {
             height: 100px;
             width: 100px;
@@ -24,13 +23,11 @@ export default class SpeakerTag extends HTMLElement{
           }
 
           #icon-div {
-          
             flex-grow: 1;
             flex-basis: 50%;
           }
 
           #slider-div {
-          
             flex-grow: 2;
             flex-basis: 30%;
             width: 300px;
@@ -39,9 +36,6 @@ export default class SpeakerTag extends HTMLElement{
             right: 50px;
           }
 
-
-       
-          
           select{
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -56,27 +50,31 @@ export default class SpeakerTag extends HTMLElement{
             padding: 0 40px 0 10px;
             border: 1px solid white;
             color: white;
-          
-             outline: none;
-        }
-        select::-ms-expand {
-            display: none;
-        }
-        select:hover{
-        border: 1px solid #FF5959;
-        }
-        option{
-        background-color: #333333;
-        }
-         #selectW{
-            position: relative;
-            left:-50px;
-            top: 22px;
-            display: inline-block;
-            height:30px;
+            outline: none;
+          }
 
-        }
-         #selectW::before{
+          select::-ms-expand {
+              display: none;
+          }
+
+          select:hover{
+            border: 1px solid #FF5959;
+          }
+
+          option{
+            background-color: #333333;
+          }
+
+          #selectW{
+              position: relative;
+              left:-50px;
+              top: 22px;
+              display: inline-block;
+              height:30px;
+
+          }
+
+          #selectW::before{
             content: '';
             position: absolute;
             z-index: 0;
@@ -85,8 +83,9 @@ export default class SpeakerTag extends HTMLElement{
             background: #ccc;
             height: 100%;
             width: 30px;
-        }
-         #selectW::after{
+          }
+
+          #selectW::after{
             content: '';
             position: absolute;
             z-index: 0;
@@ -99,76 +98,60 @@ export default class SpeakerTag extends HTMLElement{
             border-style: solid;
             border-width: 6px 6px 0 6px;
             border-color: #FF5959 transparent transparent transparent;
-        }
-       
-          #record-btn {
-    background-color: #FF5959;
-    border: none;
-    color: white;
-    padding: 3px 15px 3px 15px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 22px;
-    margin: 10px 0 0 0;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius:2px;
-    font-family: Bahnschrift;
-    position: relative;
-    top: 10px;
-    left:60px;
           }
-  
 
-        input[type=range]{
-        margin-top: 8px;
-        outline: none;
-        -webkit-appearance: none;/*清除系统默认样式*/
-        width:56% !important;
-        background: -webkit-linear-gradient(#61bd12, #61bd12) no-repeat, #ddd;
-     
-        height: 3px;/*横条的高度*/
-    }
-    /*拖动块的样式*/
-    input[type=range]::-webkit-slider-thumb {
-        -webkit-appearance: none;/*清除系统默认样式*/
-        height:16px;/*拖动块高度*/
-        width: 16px;/*拖动块宽度*/
-        background: #fff;/*拖动块背景*/
-        border-radius: 50%; /*外观设置为圆形*/
-        border: solid 1px #ddd; /*设置边框*/
-    }
+          #record-btn {
+            background-color: #FF5959;
+            border: none;
+            color: white;
+            padding: 3px 15px 3px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 22px;
+            margin: 10px 0 0 0;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius:2px;
+            font-family: Bahnschrift;
+            position: relative;
+            top: 10px;
+            left:60px;
+          }
+
+          input[type=range]{
+            margin-top: 8px;
+            outline: none;
+            -webkit-appearance: none;
+            width:56% !important;
+            background: -webkit-linear-gradient(#61bd12, #61bd12) no-repeat, #ddd;
+            height: 3px;
+          }
+
+          input[type=range]::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              height:16px;
+              width: 16px;
+              background: #fff;
+              border-radius: 50%;
+              border: solid 1px #ddd;
+          }
 
         </style>
         <div id="container" class="speaker-tag-container">
           <div id="icon-div">
-<<<<<<< HEAD
-          <canvas class="canv" id="recording"></canvas>
-           <input type="button" id="record-btn" value="record"></input>
-          </div>
-          <div id="slider-div">
-            <input type="range" id="rate"  min='0.0' max='2.0', step='0.1'><p>Value: <span id="demo"></span></p>
-            
-            <input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
-             </div>
-            <div id="selectW">
-           
-=======
             <canvas class="canv" id="recording"></canvas>
           </div>
           <div id="slider-div" class="speaker-tag-sliders">
             <input class="speaker-tag-slider" type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
             <input class="speaker-tag-slider" type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
->>>>>>> 39eb527016694f2345d47e84709539e1b1e07cb3
             <select id="voice">
               <option value="0">男</option>
               <option value="1">女</option>
               <option value="2">子供</option>
             </select>
             </div>
-         
         </div>
       `;
 
