@@ -28,19 +28,19 @@ export default class SpeakerTag extends HTMLElement{
           }
 
           #slider-div {
+       
             flex-grow: 2;
             flex-basis: 30%;
             width: 300px;
             position: relative;
-            top: 10px;
-            right: 50px;
+            top: 20px;
+            
           }
 
           select{
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            padding: 0;
             margin: 0;
             height: 30px;
             width: 100px;
@@ -58,7 +58,8 @@ export default class SpeakerTag extends HTMLElement{
           }
 
           select:hover{
-            border: 1px solid #FF5959;
+          border-color: #FF5959 ;
+            
           }
 
           option{
@@ -67,10 +68,11 @@ export default class SpeakerTag extends HTMLElement{
 
           #selectW{
               position: relative;
-              left:-50px;
-              top: 22px;
+              right: 350px;
+              top: 55px;
               display: inline-block;
               height:30px;
+              
 
           }
 
@@ -99,16 +101,17 @@ export default class SpeakerTag extends HTMLElement{
             border-width: 6px 6px 0 6px;
             border-color: #FF5959 transparent transparent transparent;
           }
-
+          
           #record-btn {
-            background-color: #FF5959;
+            background-color: white;
             border: none;
-            color: white;
-            padding: 3px 15px 3px 15px;
+            color: #FF5959;
+            height: 25px;
+            width:100px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 22px;
+            font-size: 20px;
             margin: 10px 0 0 0;
             -webkit-transition-duration: 0.4s; /* Safari */
             transition-duration: 0.4s;
@@ -116,17 +119,20 @@ export default class SpeakerTag extends HTMLElement{
             border-radius:2px;
             font-family: Bahnschrift;
             position: relative;
-            top: 10px;
-            left:60px;
+            top:5px;
+            left:150px;
           }
 
           input[type=range]{
             margin-top: 8px;
             outline: none;
-            -webkit-appearance: none;
-            width:56% !important;
-            background: -webkit-linear-gradient(#61bd12, #61bd12) no-repeat, #ddd;
+            -webkit-appearance: none;    
+            background: -webkit-linear-gradient(#FF5959, #FF5959) no-repeat, #ddd;
             height: 3px;
+            position: relative;
+            top: -65px;
+            left:50px;
+            
           }
 
           input[type=range]::-webkit-slider-thumb {
@@ -137,14 +143,33 @@ export default class SpeakerTag extends HTMLElement{
               border-radius: 50%;
               border: solid 1px #ddd;
           }
-
-          #demo {
-            display: none;
+          .rate_p{
+          color: white;
+          width:180px;
+      
+          padding-left: 5px;
+          border:1px solid #757575;
+          border-radius:2px;
+          position: relative;
+          top: -20px;
+          
+          }
+          .pitch_p{
+          color: white;
+          width:180px;
+          
+          padding-left: 5px;
+          border:1px solid #757575;
+          border-radius:2px;
+          position: relative;
+          top:-60px;
+          }
+          #pitch{
+          position: relative;
+           top:-105px;
           }
 
-          .indicator {
-            display: none;
-          }
+     
 
         </style>
         <div id="container" class="speaker-tag-container">
@@ -153,10 +178,9 @@ export default class SpeakerTag extends HTMLElement{
            <input type="button" id="record-btn" value="record"></input>
           </div>
           <div id="slider-div">
-            <input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
-            <p class="indicator">Value: <span id="demo"></span></p>
+            <p class="rate_p">速さ: </p><input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
 
-            <input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
+            <p class="pitch_p">高さ: </p><input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
              </div>
             <div id="selectW">
 
@@ -182,16 +206,13 @@ export default class SpeakerTag extends HTMLElement{
     this.recognizer_active = false;
 
     this.voice_select = this.shadowRoot.getElementById("voice");
-    this.pitch_range = this.shadowRoot.getElementById("pitch");
+
     this.record_btn = this.shadowRoot.getElementById("record-btn");
 
-    this.output= this.shadowRoot.getElementById("demo");
-    this.rate_range = this.shadowRoot.getElementById("rate");
 
-    this.output.innerHTML = this.rate_range.value;
-    this.rate_range.oninput = () => {
-        this.output.innerHTML = this.rate_range.value;
-    }
+    this.rate_range = this.shadowRoot.getElementById("rate");
+    this.pitch_range = this.shadowRoot.getElementById("pitch");
+
 
     this.record_btn.onclick = () => {
         if (this.recognizer_active){
@@ -200,15 +221,15 @@ export default class SpeakerTag extends HTMLElement{
                 this.show_recording();
                 this.recognizer.flag_speech = true;
                 this.record_btn.value = "stop";
-                this.record_btn.style.backgroundColor='white';
-                this.record_btn.style.color='#FF5959';
+                this.record_btn.style.backgroundColor='#FF5959';
+                this.record_btn.style.color='white';
             } else {
                 this.recognizer.stop();
                 this.show_stop_recording();
                 this.recognizer.flag_speech = false;
                 this.record_btn.value = "record";
-                this.record_btn.style.backgroundColor='#FF5959';
-                this.record_btn.style.color='white';
+                this.record_btn.style.backgroundColor='white';
+                this.record_btn.style.color='#FF5959';
             }
         }
 
