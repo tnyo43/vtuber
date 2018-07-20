@@ -1,4 +1,5 @@
 import  "./facetrack/clmtrackr.min.js";
+import Smoothing from "./smoothing/smoothing.js";
 
 var IMG_DIR = "./static/img/";
 const FACE_KEY = "FACE";
@@ -292,24 +293,60 @@ export default class VTuberFrame extends HTMLElement{
     this.ctrack = new clm.tracker();
     this.draw_request = null;
 
+    this.smoothing = (N, lowpass) => {
+      this.fft_points = N;
+      let new_smoothing = () => { 
+        let s = new Smoothing(this.fft_points);
+        s.low_pass(lowpass);
+        return s;
+      }
+      this.smoothing_posX = new_smoothing();
+      this.smoothing_posY = new_smoothing();
+      this.smoothing_rot = new_smoothing();
+      this.smoothing_width = new_smoothing();
+      this.smoothing_height = new_smoothing();
+    }
+    this.is_smoothing = true;
+
     this.plot_face = () => {
       var points = this.points;
-      this.face_sprite.position.x = WIDTH;
-      this.face_sprite.position.y = 0;
+      let x = WIDTH;
+      let y = 0;
       var n = POINT_INDEX.length;
       for (var i = 0; i < n; i++) {
         var point = points[POINT_INDEX[i]];
-        this.face_sprite.position.x -= point[0]/n;
-        this.face_sprite.position.y += point[1]/n;
+        x -= point[0]/n;
+        y += point[1]/n;
       }
-      if (points[LEFT] != undefined) {
-        var fw = this.distance(points[LEFT], points[RIGHT]);
-        var fh = this.distance(points[CHIN], points[NOUSE])*2;
-        var r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
-        this.face_sprite.width = fw;
-        this.face_sprite.height = fh;
-        this.face_sprite.anchor.x = 0.5;
-        this.face_sprite.anchor.y = 0.5;
+      let w = this.distance(points[LEFT], points[RIGHT]);
+      let h = this.distance(points[CHIN], points[NOUSE])*2;
+      let r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
+
+      this.face_sprite.anchor.x = 0.5;
+      this.face_sprite.anchor.y = 0.5;
+
+      if (this.is_smoothing) {
+        if (this.smoothing_posX == null || this.smoothing_posX == undefined) return;
+
+        this.smoothing_posX.put(x);
+        this.smoothing_posY.put(y);
+        this.smoothing_width.put(w);
+        this.smoothing_height.put(h);
+        this.smoothing_rot.put(r);
+
+        if (this.smoothing_posX.is_ready() && this.smoothing_posY.is_ready()) {
+          this.face_sprite.position.x = this.smoothing_posX.get();
+          this.face_sprite.position.y = this.smoothing_posY.get();
+          this.face_sprite.width = this.smoothing_width.get();
+          this.face_sprite.height = this.smoothing_height.get();
+          this.face_sprite.rotation = this.smoothing_rot.get();
+          this.renderer.render(this.stage);
+        }
+      } else {
+        this.face_sprite.position.x = x;
+        this.face_sprite.position.y = y;
+        this.face_sprite.width = w;
+        this.face_sprite.height = h;
         this.face_sprite.rotation = r;
         this.renderer.render(this.stage);
       }
@@ -356,6 +393,7 @@ export default class VTuberFrame extends HTMLElement{
           self_loop()
         }
       });
+      this.smoothing(8, 2);
     }
 
     this.comp_activate = (points) => {
@@ -370,6 +408,7 @@ export default class VTuberFrame extends HTMLElement{
         }
       };
       comp_loop();
+      this.smoothing(32, 2);
     }
     this.set_option();
     this.set_texture(FACE_KEY, 0);
@@ -477,6 +516,14 @@ export default class VTuberFrame extends HTMLElement{
 
   get comp_active() {
     return this._comp_active;
+  }
+
+  set smoothing_active(b) {
+    this.is_smoothing = b;
+  }
+
+  get smoothing_active() {
+    return this.is_smoothing;
   }
 
   distance (x, y) {
