@@ -35,6 +35,7 @@ var IMG_DIR = "./YOUR_IMAGE_PATH/";
 
 htmlファイルで
 ```
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
 <script type="module" src="/static/VTuberFrame.js"></script>
 <script src="/static/facetrack/model_pca_20_svm.js"></script>
 <script src="/static/facetrack/clmtrackr.min.js"></script>
@@ -121,4 +122,12 @@ htmlファイルで
   stag.recognizer_active = true;
  </script>
 ```
-スペースキーで音声認識が開始し、qキーで停止する。
+recordボタンで認識を開始し、stopボタンで終了
+また、VTuberTagの設定ボタンで声のモードを変更する。
+
+```
+vtag.setting_callback = stag.show_setting;
+```
+
+  import VTuberFrame from './static/VTuberFrame.js'つか
+  import VTuberFrame from './static/VTuberFrame.js'
