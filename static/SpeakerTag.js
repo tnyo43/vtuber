@@ -160,11 +160,25 @@ export default class SpeakerTag extends HTMLElement{
               <p class="pitch_p">高さ: </p><input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
             </div>
             <div id="select">
-              <select id="voice">
-                <option value="0">男</option>
-                <option value="1">女</option>
-                <option value="2">子供</option>
-              </select>
+            <select id="voice" style="width:9em">
+              <optgroup label="男性" style="color:black">
+               <option value="koutarou" style="background-color:gray">男性A</option>
+               <option value="osamu" style="background-color:gray">男性B</option>
+               <option value="seji" style="background-color:gray">男性C</option>
+               <option value="hiroshi" style="background-color:gray">男性D</option>
+              </optgroup>
+              <optgroup label="女性" style="color:black">
+               <option value="kaho" style="background-color:gray">女性A</option>
+               <option value="nozomi" style="background-color:gray">女性B</option>
+               <option value="akari" style="background-color:gray">女性C</option>
+               <option value="nanako" style="background-color:gray">女性D</option>
+              </optgroup>
+              <optgroup label="キャラクター" style="color:black">
+               <option value="sumire" style="background-color:gray">結月 ゆかり</option>
+               <option value="maki" style="background-color:gray">弦巻 マキ</option>
+               <option value="anzu" style="background-color:gray">月詠 アイ</option>
+              </optgroup>
+            </select>
             </div>
           </div>
         </div>
@@ -257,7 +271,10 @@ export default class SpeakerTag extends HTMLElement{
 
   set text(text) {
     //TODO set voice pitch, rate to callback
-    this.callback(text, 1,1,1);
+    let v = this.voice_select.value;
+    let p = this.pitch_range.value;
+    let r = this.rate_range.value;
+    this.callback(text, v, p, r);
   }
 
   get text() {
