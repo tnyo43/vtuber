@@ -28,6 +28,7 @@
         }
    </style>
    <link rel="stylesheet" type="text/css" href="static/css/Speaker.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
 </head>
 <body>
 
@@ -75,13 +76,8 @@
 
     let audio = document.getElementById("audio");
 
-    /*
-    vtag.bg_src = 'static/img/background.jpg';
-    vtag.src = 'static/img/nene.png';
-    vtag2.src = 'static/img/nene.png';
-    vtag2.bg_src = 'static/img/cojtroom.jpg';
-    */
     vtag.callback = callback;
+    vtag.setting_callback = stag.show_setting;
     vtag.self_active = true;
     vtag2.comp_active = true;
 

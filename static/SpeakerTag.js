@@ -7,7 +7,8 @@ export default class SpeakerTag extends HTMLElement{
     super();
 
     this.attachShadow({mode: "open"}); 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = 
+    `
         <style>
           .canv {
             height: 100px;
@@ -25,16 +26,18 @@ export default class SpeakerTag extends HTMLElement{
           #icon-div {
             flex-grow: 1;
             flex-basis: 50%;
+            position: relative;
+            left:440px;
+            top:35px; 
           }
 
           #slider-div {
-       
             flex-grow: 2;
             flex-basis: 30%;
             width: 300px;
             position: relative;
             top: 20px;
-            
+            right:280px;
           }
 
           select{
@@ -54,73 +57,42 @@ export default class SpeakerTag extends HTMLElement{
           }
 
           select::-ms-expand {
-              display: none;
+            display: none;
           }
 
           select:hover{
-          border-color: #FF5959 ;
-            
+            border-color: #FF5959 ;
           }
 
           option{
             background-color: #333333;
           }
 
-          #selectW{
-              position: relative;
-              right: 350px;
-              top: 55px;
-              display: inline-block;
-              height:30px;
-              
-
+          #select{
+            position:relative;
+            top: -130px;
+            right:50px;
+            display: inline-block;
+            height:30px;
+            z-index: 1;
           }
 
-          #selectW::before{
-            content: '';
-            position: absolute;
-            z-index: 0;
-            top: 0;
-            right: 0;
-            background: #ccc;
-            height: 100%;
-            width: 30px;
-          }
-
-          #selectW::after{
-            content: '';
-            position: absolute;
-            z-index: 0;
-            top: 0;
-            bottom: 0;
-            margin: auto 0;
-            right: 9px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 6px 6px 0 6px;
-            border-color: #FF5959 transparent transparent transparent;
-          }
-          
           #record-btn {
             background-color: white;
             border: none;
             color: #FF5959;
-            height: 25px;
-            width:100px;
+            height: 40px;
+            width:150px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 20px;
+            font-size: 30px;
             margin: 10px 0 0 0;
             -webkit-transition-duration: 0.4s; /* Safari */
             transition-duration: 0.4s;
             cursor: pointer;
             border-radius:2px;
             font-family: Bahnschrift;
-            position: relative;
-            top:5px;
-            left:150px;
           }
 
           input[type=range]{
@@ -132,7 +104,6 @@ export default class SpeakerTag extends HTMLElement{
             position: relative;
             top: -65px;
             left:50px;
-            
           }
 
           input[type=range]::-webkit-slider-thumb {
@@ -143,53 +114,59 @@ export default class SpeakerTag extends HTMLElement{
               border-radius: 50%;
               border: solid 1px #ddd;
           }
+
           .rate_p{
-          color: white;
-          width:180px;
-      
-          padding-left: 5px;
-          border:1px solid #757575;
-          border-radius:2px;
-          position: relative;
-          top: -20px;
-          
-          }
-          .pitch_p{
-          color: white;
-          width:180px;
-          
-          padding-left: 5px;
-          border:1px solid #757575;
-          border-radius:2px;
-          position: relative;
-          top:-60px;
-          }
-          #pitch{
-          position: relative;
-           top:-105px;
+            color: white;
+            width:180px;
+            padding-left: 5px;
+            border:1px solid #757575;
+            border-radius:2px;
+            position: relative;
+            top: -20px;
           }
 
-     
+          .pitch_p{
+            color: white;
+            width:180px;
+            padding-left: 5px;
+            border:1px solid #757575;
+            border-radius:2px;
+            position: relative;
+            top:-60px;
+          }
+
+          #pitch{
+            position: relative;
+            top:-105px;
+          }
+
+          .hide{
+            display: none;
+          }
+
+          .show {
+            display: inline;
+          }
 
         </style>
         <div id="container" class="speaker-tag-container">
           <div id="icon-div">
-          <canvas class="canv" id="recording"></canvas>
-           <input type="button" id="record-btn" value="record"></input>
+            <canvas class="canv" id="recording"></canvas>
+            <input type="button" id="record-btn" value="record"></input>
           </div>
-          <div id="slider-div">
-            <p class="rate_p">速さ: </p><input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
-
-            <p class="pitch_p">高さ: </p><input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
-             </div>
-            <div id="selectW">
-
-            <select id="voice">
-              <option value="0">男</option>
-              <option value="1">女</option>
-              <option value="2">子供</option>
-            </select>
+          <div id="hide_set">
+            <div id="slider-div">
+              <p class="rate_p">速さ: </p><input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
+              <p class="pitch_p">高さ: </p><input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
             </div>
+            <div id="select">
+              <select id="voice">
+                <option value="0">男</option>
+                <option value="1">女</option>
+                <option value="2">子供</option>
+              </select>
+            </div>
+          </div>
         </div>
       `;
 
@@ -209,32 +186,44 @@ export default class SpeakerTag extends HTMLElement{
 
     this.record_btn = this.shadowRoot.getElementById("record-btn");
 
+    this.hide_set=this.shadowRoot.getElementById("hide_set");
 
     this.rate_range = this.shadowRoot.getElementById("rate");
     this.pitch_range = this.shadowRoot.getElementById("pitch");
 
 
     this.record_btn.onclick = () => {
-        if (this.recognizer_active){
-            if (!this.recognizer.is_recognizing) {
-                this.recognizer.start();
-                this.show_recording();
-                this.recognizer.flag_speech = true;
-                this.record_btn.value = "stop";
-                this.record_btn.style.backgroundColor='#FF5959';
-                this.record_btn.style.color='white';
-            } else {
-                this.recognizer.stop();
-                this.show_stop_recording();
-                this.recognizer.flag_speech = false;
-                this.record_btn.value = "record";
-                this.record_btn.style.backgroundColor='white';
-                this.record_btn.style.color='#FF5959';
-            }
+      if (this.recognizer_active){
+        if (!this.recognizer.is_recognizing) {
+          this.recognizer.start();
+          this.show_recording();
+          this.recognizer.flag_speech = true;
+          this.record_btn.value = "stop";
+          this.record_btn.style.backgroundColor='#FF5959';
+          this.record_btn.style.color='white';
+        } else {
+          this.recognizer.stop();
+          this.show_stop_recording();
+          this.recognizer.flag_speech = false;
+          this.record_btn.value = "record";
+          this.record_btn.style.backgroundColor='white';
+          this.record_btn.style.color='#FF5959';
         }
-
+      }
     }
 
+
+    this.show_setting = (b) => {
+      if (b) {
+        this.hide_set.classList.add("show");
+        this.hide_set.classList.remove("hide");
+      } else {
+        this.hide_set.classList.remove("show");
+        this.hide_set.classList.add("hide");
+      }
+    }
+
+    this.show_setting(false);
 
   }
 
