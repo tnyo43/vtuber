@@ -20,7 +20,9 @@ export default class VTuberFrame extends HTMLElement{
     super();
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = `
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
       <style>
+      
         #display-container {
           display: flex;
           width: 600px;
@@ -93,6 +95,12 @@ export default class VTuberFrame extends HTMLElement{
           font-weight: bold;
           border-style: solid;
         }
+        
+        .fas:: before {
+            font-family: "Font Awesome\ 5 Free";
+            font-weight: 900;
+            content: "\f013";
+        }
 
         #white-screen {
           display: none;
@@ -108,11 +116,15 @@ export default class VTuberFrame extends HTMLElement{
         .active {
           transform: translateX(-300px);
         }
+        .fas{
+        z-index: 10;
+        }
+      
       </style>
 
       <div id="display-container">
         <video id="video"></video>
-        <div id="op-btn">x</div>
+        <div id="op-btn"><i id="btn_ftn" class="fas fa-cog"></i></div>
         <div id="option">
           <div id="option-bg">
             <div class="option-title">背景</div>
@@ -134,14 +146,19 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.option = this.shadowRoot.getElementById("option");
     this.op_btn = this.shadowRoot.getElementById("op-btn");
+    this.btn_ftn= this.shadowRoot.getElementById("btn_ftn");
     this.white_screen = this.shadowRoot.getElementById("white-screen");
     this.op_btn.addEventListener("click", (event) => {
       if (this.option.style.display == "none" || this.option.style.display == "") {
         this.white_screen.style.display = "inline";
         this.option.style.display = "flex";
+        this.btn_ftn.classList.remove("fa-fog");
+        this.btn_ftn.classList.add("fa-times");
       } else {
         this.white_screen.style.display = "none";
         this.option.style.display = "none";
+          this.btn_ftn.classList.remove("fa-times");
+          this.btn_ftn.classList.add("fa-fog");
       }
     });
     this.container.insertBefore(this.canvas, this.op_btn);
