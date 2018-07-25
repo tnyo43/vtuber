@@ -209,6 +209,7 @@ export default class VTuberFrame extends HTMLElement{
 
     this.set_texture = (key, value) => {
       if (key == FACE_KEY) {
+        this.face_idx = value;
         this.set_face_texture(this.face_textures[value][0]);
       } else if (key == BG_KEY) {
         this.set_bg_texture(this.bg_textures[value]);
