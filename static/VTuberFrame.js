@@ -341,7 +341,6 @@ export default class VTuberFrame extends HTMLElement{
       let w = this.distance(points[LEFT], points[RIGHT]);
       let h = this.distance(points[CHIN], points[NOUSE])*2;
       let r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
-
       this.face_sprite.anchor.x = 0.5;
       this.face_sprite.anchor.y = 0.5;
 
@@ -354,12 +353,20 @@ export default class VTuberFrame extends HTMLElement{
         this.smoothing_height.put(h);
         this.smoothing_rot.put(r);
 
-        if (this.smoothing_posX.is_ready() && this.smoothing_posY.is_ready()) {
+        if (
+            this.smoothing_posX.is_ready() && 
+            this.smoothing_posY.is_ready() &&
+            this.smoothing_width.is_ready() &&
+            this.smoothing_height.is_ready() &&
+            this.smoothing_rot.is_ready()
+        ) {
           this.face_sprite.position.x = this.smoothing_posX.get();
           this.face_sprite.position.y = this.smoothing_posY.get();
           this.face_sprite.width = this.smoothing_width.get();
           this.face_sprite.height = this.smoothing_height.get();
-          this.face_sprite.rotation = this.smoothing_rot.get();
+          r = this.smoothing_rot.get();
+          console.log(r);
+          this.face_sprite.rotation = r;
           this.renderer.render(this.stage);
         }
       } else {
