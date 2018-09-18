@@ -1,11 +1,9 @@
-import Speaker from './Speaker.js';
-
 export default class {
   constructor() {
-    this.speaker = null;
     this.recognition = null;
     this.start_function = null;
     this.stop_function = null;
+    this.is_recognizing = false;
 
     this.flag_speech = false;
     this.flag_result = false;
@@ -21,12 +19,12 @@ export default class {
     return this._callback;
   }
 
-  set_speaker(speaker) {
-    if (speaker != null) {
-      this.speaker = speaker;
-    } else {
-      this.speaker = new Speaker();
-    }
+  set is_recognizing (r) {
+    this._is_recognizing = r;
+  }
+
+  get is_recognizing () {
+    return this._is_recognizing;
   }
 
   set_event_functions(start, stop) {
@@ -35,6 +33,7 @@ export default class {
   }
 
   start(){
+    this.is_recognizing = true;
     this.recognition = new webkitSpeechRecognition();
     this.recognition.lang = "ja-JP";
     this.recognition.start();
@@ -64,17 +63,17 @@ export default class {
     this.recognition.onresult = (e) => {
       console.log("result")
       if(e.results.length > 0){
-        var value = e.results[0][0].transcript;
-        console.log("result is \"" + value + "\"")
-        if (this.speaker != null) {
-          this.speaker.speak(value);
-          this.callback(value);
+        var text = e.results[0][0].transcript;
+        console.log("result is \"" + text + "\"")
+        if (this.callback != null) {
+          this.callback(text);
         }
       }
     }
   }
 
   stop(){
+    this.is_recognizing = false;
     if (this.stop_function != null) {
       this.stop_function();
     }

@@ -1,5 +1,5 @@
 import Recognizer from "./Recognizer.js";
-import Speaker from "./Speaker.js";
+// import Speaker from "./Speaker.js";
 
 export default class SpeakerTag extends HTMLElement{
   constructor() {
@@ -7,19 +7,185 @@ export default class SpeakerTag extends HTMLElement{
     super();
 
     this.attachShadow({mode: "open"}); 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = 
+    `
         <style>
           .canv {
-            height: 20px;
-            width: 20px;
+            height: 100px;
+            width: 100px;
+            display: none;
           }
+
+          #container {
+            background-color: #333333;
+            height: 100px;
+            width: 600px;
+            display: flex;
+          }
+
+          #icon-div {
+            flex-grow: 1;
+            flex-basis: 50%;
+            position: relative;
+            left:440px;
+            top:35px; 
+          }
+
+          #slider-div {
+            flex-grow: 2;
+            flex-basis: 30%;
+            width: 300px;
+            position: relative;
+            top: 20px;
+            right:280px;
+          }
+
+          select{
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+            height: 30px;
+            width: 100px;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+            padding: 0 40px 0 10px;
+            border: 1px solid white;
+            color: white;
+            outline: none;
+          }
+
+          select::-ms-expand {
+            display: none;
+          }
+
+          select:hover{
+            border-color: #FF5959 ;
+          }
+
+          option{
+            background-color: #333333;
+          }
+
+          #select{
+            position:relative;
+            top: -130px;
+            right:50px;
+            display: inline-block;
+            height:30px;
+            z-index: 1;
+          }
+
+          #record-btn {
+            background-color: white;
+            border: none;
+            color: #FF5959;
+            height: 40px;
+            width:150px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 30px;
+            margin: 10px 0 0 0;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius:2px;
+            font-family: Bahnschrift;
+          }
+
+          input[type=range]{
+            margin-top: 8px;
+            outline: none;
+            -webkit-appearance: none;    
+            background: -webkit-linear-gradient(#FF5959, #FF5959) no-repeat, #ddd;
+            height: 3px;
+            position: relative;
+            top: -65px;
+            left:50px;
+          }
+
+          input[type=range]::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              height:16px;
+              width: 16px;
+              background: #fff;
+              border-radius: 50%;
+              border: solid 1px #ddd;
+          }
+
+          .rate_p{
+            color: white;
+            width:180px;
+            padding-left: 5px;
+            border:1px solid #757575;
+            border-radius:2px;
+            position: relative;
+            top: -20px;
+          }
+
+          .pitch_p{
+            color: white;
+            width:180px;
+            padding-left: 5px;
+            border:1px solid #757575;
+            border-radius:2px;
+            position: relative;
+            top:-60px;
+          }
+
+          #pitch{
+            position: relative;
+            top:-105px;
+          }
+
+          .hide{
+            display: none;
+          }
+
+          .show {
+            display: inline;
+          }
+
         </style>
-        <canvas class="canv" id="recording"/>
+        <div id="container" class="speaker-tag-container">
+          <div id="icon-div">
+            <canvas class="canv" id="recording"></canvas>
+            <input type="button" id="record-btn" value="record"></input>
+          </div>
+          <div id="hide_set">
+            <div id="slider-div">
+              <p class="rate_p">速さ: </p><input type="range" id="rate"  min='0.0' max='2.0', step='0.1'>
+              <p class="pitch_p">高さ: </p><input type="range" id="pitch" min='0.0' max='2.0', step='0.1'>
+            </div>
+            <div id="select">
+            <select id="voice" style="width:9em">
+              <optgroup label="男性" style="color:black">
+               <option value="koutarou" style="background-color:gray">男性A</option>
+               <option value="osamu" style="background-color:gray">男性B</option>
+               <option value="seji" style="background-color:gray">男性C</option>
+               <option value="hiroshi" style="background-color:gray">男性D</option>
+              </optgroup>
+              <optgroup label="女性" style="color:black">
+               <option value="kaho" style="background-color:gray">女性A</option>
+               <option value="nozomi" style="background-color:gray">女性B</option>
+               <option value="akari" style="background-color:gray">女性C</option>
+               <option value="nanako" style="background-color:gray">女性D</option>
+              </optgroup>
+              <optgroup label="キャラクター" style="color:black">
+               <option value="sumire" style="background-color:gray">結月 ゆかり</option>
+               <option value="maki" style="background-color:gray">弦巻 マキ</option>
+               <option value="anzu" style="background-color:gray">月詠 アイ</option>
+              </optgroup>
+            </select>
+            </div>
+          </div>
+        </div>
       `;
 
     this.recognizer = new Recognizer();
-    this.recognizer.set_speaker(null);
-    this.comp_speaker = new Speaker();
+    this.callback = null;
 
     this.canvas = this.shadowRoot.getElementById("recording");
     this.context = this.canvas.getContext("2d");
@@ -27,19 +193,52 @@ export default class SpeakerTag extends HTMLElement{
     this.canvas.height = 40;
 
     this.show_stop_recording();
-    this.set_keydown();
+    // this.set_keydown();
     this.recognizer_active = false;
-    this.comp_active = false;
 
-    this.comp_speak = (text) => {
-      if (this.comp_active == false) {
-        return;
-      } else {
-        this.comp_speaker.speak(text);
+    this.voice_select = this.shadowRoot.getElementById("voice");
+
+    this.record_btn = this.shadowRoot.getElementById("record-btn");
+
+    this.hide_set=this.shadowRoot.getElementById("hide_set");
+
+    this.rate_range = this.shadowRoot.getElementById("rate");
+    this.pitch_range = this.shadowRoot.getElementById("pitch");
+
+
+    this.record_btn.onclick = () => {
+      if (this.recognizer_active){
+        if (!this.recognizer.is_recognizing) {
+          this.recognizer.start();
+          this.show_recording();
+          this.recognizer.flag_speech = true;
+          this.record_btn.value = "stop";
+          this.record_btn.style.backgroundColor='#FF5959';
+          this.record_btn.style.color='white';
+        } else {
+          this.recognizer.stop();
+          this.show_stop_recording();
+          this.recognizer.flag_speech = false;
+          this.record_btn.value = "record";
+          this.record_btn.style.backgroundColor='white';
+          this.record_btn.style.color='#FF5959';
+        }
       }
     }
 
-    this.callback = null;
+
+    this.show_setting = (b) => {
+      if (b) {
+        this.hide_set.classList.add("show");
+        this.hide_set.classList.remove("hide");
+      } else {
+        this.hide_set.classList.remove("show");
+        this.hide_set.classList.add("hide");
+      }
+    }
+
+    this.show_setting(false);
+
   }
 
   set recognizer_active (b) {
@@ -55,28 +254,39 @@ export default class SpeakerTag extends HTMLElement{
     return this._recognizer_active;
   }
 
-  set comp_active (b) {
-    this._comp_active = b;
-  }
-
-  get comp_active () {
-    return this._comp_active;
-  }
-
   set callback (f) {
     this._callback = f;
-    this.recognizer.callback = this._callback;
+    this.recognizer.callback = (text) => {
+      this.text = text;
+      let v = this.voice_select.value;
+      let p = this.pitch_range.value;
+      let r = this.rate_range.value;
+      console.log(this.text, v, p, r);
+    };
   }
 
   get callback () {
     return this._callback;
   }
 
+  set text(text) {
+    //TODO set voice pitch, rate to callback
+    let v = this.voice_select.value;
+    let p = this.pitch_range.value;
+    let r = this.rate_range.value;
+    this.callback(text, v, p, r);
+  }
+
+  get text() {
+    return "";
+  }
+
+  /*
   set_keydown() {
     document.addEventListener('keydown', (event) => {
         const keyName = event.key;
         if (keyName === " ") {
-          if (this.recognizer_active) {
+          if (this.recognizer_active && !this.recognizer.is_recognizing) {
             this.recognizer.start();
             this.show_recording();
             this.recognizer.flag_speech = true;
@@ -89,6 +299,7 @@ export default class SpeakerTag extends HTMLElement{
         }
       }, true);
   }
+  */
 
   double_ring(color) {
     this.context.fillStyle = color;
@@ -115,3 +326,4 @@ export default class SpeakerTag extends HTMLElement{
 }
 
 customElements.define("speaker-tag", SpeakerTag);
+

@@ -1,4 +1,5 @@
 import  "./facetrack/clmtrackr.min.js";
+import Smoothing from "./smoothing/smoothing.js";
 
 var IMG_DIR = "./static/img/";
 const FACE_KEY = "FACE";
@@ -19,6 +20,7 @@ export default class VTuberFrame extends HTMLElement{
     super();
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = `
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
       <style>
         #display-container {
           display: flex;
@@ -93,6 +95,12 @@ export default class VTuberFrame extends HTMLElement{
           border-style: solid;
         }
 
+        .fas:: before {
+            font-family: "Font Awesome\ 5 Free";
+            font-weight: 900;
+            content: "\f013";
+        }
+
         #white-screen {
           display: none;
           z-index: 1;
@@ -107,11 +115,15 @@ export default class VTuberFrame extends HTMLElement{
         .active {
           transform: translateX(-300px);
         }
+        .fas{
+        z-index: 10;
+        }
+
       </style>
 
       <div id="display-container">
         <video id="video"></video>
-        <div id="op-btn">x</div>
+        <div id="op-btn"><i id="btn_ftn" class="fas fa-cog"></i></div>
         <div id="option">
           <div id="option-bg">
             <div class="option-title">背景</div>
@@ -133,18 +145,28 @@ export default class VTuberFrame extends HTMLElement{
     this.canvas = this.renderer.view;
     this.option = this.shadowRoot.getElementById("option");
     this.op_btn = this.shadowRoot.getElementById("op-btn");
+    this.btn_ftn= this.shadowRoot.getElementById("btn_ftn");
     this.white_screen = this.shadowRoot.getElementById("white-screen");
+    this.setting_callback = null;
     this.op_btn.addEventListener("click", (event) => {
       if (this.option.style.display == "none" || this.option.style.display == "") {
         this.white_screen.style.display = "inline";
         this.option.style.display = "flex";
+        this.btn_ftn.classList.remove("fa-fog");
+        this.btn_ftn.classList.add("fa-times");
+        if (this.setting_callback != null) this.setting_callback(true);
       } else {
         this.white_screen.style.display = "none";
         this.option.style.display = "none";
+        this.btn_ftn.classList.remove("fa-times");
+        this.btn_ftn.classList.add("fa-fog");
+        if (this.setting_callback != null) this.setting_callback(false);
       }
     });
     this.container.insertBefore(this.canvas, this.op_btn);
 
+    // 口パク
+    this.lipsynch_actve = false;
 
     this.bg_container = null;
     this.face_container = null; 
@@ -187,7 +209,8 @@ export default class VTuberFrame extends HTMLElement{
 
     this.set_texture = (key, value) => {
       if (key == FACE_KEY) {
-        this.set_face_texture(this.face_textures[value]);
+        this.face_idx = value;
+        this.set_face_texture(this.face_textures[value][0]);
       } else if (key == BG_KEY) {
         this.set_bg_texture(this.bg_textures[value]);
       }
@@ -232,17 +255,20 @@ export default class VTuberFrame extends HTMLElement{
         for (var i = 0; i < num; i++) {
           const image = new Image();
           const j = i;
-          const filename = IMG_DIR + 'face/face' +('000' + i).slice(-3) + ".png"
+
+          // 口が閉じている顔と開いている顔のセット
+          let faces = []
+
+          // 閉じている顔、デフォルト
+          let filename = IMG_DIR + 'face/img' +('000' + i).slice(-3) + "0.png"
           image.addEventListener("click", ()=>{
-            this.set_face_texture(this.face_textures[j]);
-            for (var k = 0; k < num; k++) {
-              this.face_container.children[k].classList.remove("selected-icon");
-            }
+            this.set_face_texture(this.face_textures[j][0]);
+            this.face_container.children[this.face_idx].classList.remove("selected-icon");
             image.classList.add("selected-icon");
             if (this.option_callback != null) {
               var key = FACE_KEY;
-              var val = j;
-              this.option_callback(key, val);
+              this.face_idx = j;
+              this.option_callback(key, this.face_idx);
             }
           }); 
           image.src = filename;
@@ -251,7 +277,14 @@ export default class VTuberFrame extends HTMLElement{
           image.classList.add("icon");
           this.face_container.appendChild(image);
           var texture = PIXI.Texture.fromImage(filename);
-          this.face_textures.push(texture);
+          faces.push(texture)
+
+          // 開いている顔
+          filename = IMG_DIR + 'face/img' + ('000' + i).slice(-3) + "1.png";
+          texture = PIXI.Texture.fromImage(filename);
+          faces.push(texture)
+
+          this.face_textures.push(faces);
         }
       }
       if (this.self_active) {
@@ -272,6 +305,7 @@ export default class VTuberFrame extends HTMLElement{
 
     // 顔のテクスチャ
     this.texture = null;
+    this.face_idx = 0;
     this.src = null;
     this.face_sprite = null;
     this.points = null;
@@ -279,24 +313,67 @@ export default class VTuberFrame extends HTMLElement{
     this.ctrack = new clm.tracker();
     this.draw_request = null;
 
+    this.smoothing = (N, lowpass) => {
+      this.fft_points = N;
+      let new_smoothing = () => { 
+        let s = new Smoothing(this.fft_points);
+        s.low_pass(lowpass);
+        return s;
+      }
+      this.smoothing_posX = new_smoothing();
+      this.smoothing_posY = new_smoothing();
+      this.smoothing_rot = new_smoothing();
+      this.smoothing_width = new_smoothing();
+      this.smoothing_height = new_smoothing();
+    }
+    this.is_smoothing = true;
+
     this.plot_face = () => {
       var points = this.points;
-      this.face_sprite.position.x = WIDTH;
-      this.face_sprite.position.y = 0;
+      let x = WIDTH;
+      let y = 0;
       var n = POINT_INDEX.length;
       for (var i = 0; i < n; i++) {
         var point = points[POINT_INDEX[i]];
-        this.face_sprite.position.x -= point[0]/n;
-        this.face_sprite.position.y += point[1]/n;
+        x -= point[0]/n;
+        y += point[1]/n;
       }
-      if (points[LEFT] != undefined) {
-        var fw = this.distance(points[LEFT], points[RIGHT]);
-        var fh = this.distance(points[CHIN], points[NOUSE])*2;
-        var r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
-        this.face_sprite.width = fw;
-        this.face_sprite.height = fh;
-        this.face_sprite.anchor.x = 0.5;
-        this.face_sprite.anchor.y = 0.5;
+      let w = this.distance(points[LEFT], points[RIGHT]);
+      let h = this.distance(points[CHIN], points[NOUSE])*2;
+      let r = -this.rotate(points[LEFT], points[RIGHT], points[BROW], points[CHIN]);
+      this.face_sprite.anchor.x = 0.5;
+      this.face_sprite.anchor.y = 0.5;
+
+      if (this.is_smoothing) {
+        if (this.smoothing_posX == null || this.smoothing_posX == undefined) return;
+
+        this.smoothing_posX.put(x);
+        this.smoothing_posY.put(y);
+        this.smoothing_width.put(w);
+        this.smoothing_height.put(h);
+        this.smoothing_rot.put(r);
+
+        if (
+            this.smoothing_posX.is_ready() && 
+            this.smoothing_posY.is_ready() &&
+            this.smoothing_width.is_ready() &&
+            this.smoothing_height.is_ready() &&
+            this.smoothing_rot.is_ready()
+        ) {
+          this.face_sprite.position.x = this.smoothing_posX.get();
+          this.face_sprite.position.y = this.smoothing_posY.get();
+          this.face_sprite.width = this.smoothing_width.get();
+          this.face_sprite.height = this.smoothing_height.get();
+          r = this.smoothing_rot.get();
+          console.log(r);
+          this.face_sprite.rotation = r;
+          this.renderer.render(this.stage);
+        }
+      } else {
+        this.face_sprite.position.x = x;
+        this.face_sprite.position.y = y;
+        this.face_sprite.width = w;
+        this.face_sprite.height = h;
         this.face_sprite.rotation = r;
         this.renderer.render(this.stage);
       }
@@ -343,6 +420,7 @@ export default class VTuberFrame extends HTMLElement{
           self_loop()
         }
       });
+      this.smoothing(8, 2);
     }
 
     this.comp_activate = (points) => {
@@ -357,10 +435,50 @@ export default class VTuberFrame extends HTMLElement{
         }
       };
       comp_loop();
+      this.smoothing(32, 2);
     }
     this.set_option();
     this.set_texture(FACE_KEY, 0);
     this.set_texture(BG_KEY, 0);
+
+
+    this.lip_mode = 0;
+    this.lipsynch = () => {
+      let lipsynch_loop = () => {
+        this.lip_mode = 1-this.lip_mode;
+        if (this.lipsynch_active) {
+          this.set_face_texture(this.face_textures[this.face_idx][this.lip_mode]);
+          setTimeout(lipsynch_loop, 200);
+        } else {
+          this.lip_mode = 0;
+          this.set_face_texture(this.face_textures[this.face_idx][0]);
+        }
+      };
+      lipsynch_loop();
+    }
+    this.lipsynch_interval = 3000;
+
+    this.lipsynch_start = (time) => {
+      if (!this.lipsynch_active) {
+        this.lipsynch_interval = time;
+        this.lipsynch_active = true;
+      }
+    }
+  }
+
+  set lipsynch_active(active) {
+    this._lipsynch_active = active;
+    if (active) {
+      this.lipsynch(this.lipsynch_interval);
+      let lipsynch_deactive = () => { this.lipsynch_active = false; }
+      setTimeout(lipsynch_deactive, this.lipsynch_interval);
+    } else {
+      // 口パクオフ
+    }
+  }
+
+  get lipsynch_active() {
+    return this._lipsynch_active;
   }
 
   set option_callback(f) {
@@ -425,6 +543,14 @@ export default class VTuberFrame extends HTMLElement{
 
   get comp_active() {
     return this._comp_active;
+  }
+
+  set smoothing_active(b) {
+    this.is_smoothing = b;
+  }
+
+  get smoothing_active() {
+    return this.is_smoothing;
   }
 
   distance (x, y) {

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>チャットチャンネル</title>
+
     <style>
         li{
             list-style: none;
@@ -25,7 +26,9 @@
         #vtubertag {
           width: 100;
         }
-    </style>
+   </style>
+   <link rel="stylesheet" type="text/css" href="static/css/Speaker.css">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
 </head>
 <body>
 
@@ -40,6 +43,8 @@
       <video id="video"></video>
       <speaker-tag id="speakertag"></speaker-tag>
       <vtuber-frame id="vtubertag"></vtuber-frame>
+      <div id="lipbtn">lipsynch</div>
+      <audio src="/static/musicbox.mp3" id="audio"></audio>
       <vtuber-frame id="vtubertag2"></vtuber-frame>
     </div>
     <div id="opdisplay-container" class="display-container">
@@ -52,10 +57,10 @@
     let stag = document.getElementById("speakertag");
     stag.recognizer_active = true;
     stag.comp_active = true;
-    let log = (x) => {
-      stag.comp_speak(x);
+    stag.callback = (text, voice, pitch, rate) => {
+      // WEBSOCKETR_SEND(text, voice, pitch, rate);
+      console.log(text, voice, pitch, rate);
     }
-    stag.callback = log;
 
     let vtag = document.getElementById('vtubertag');
     let vtag2 = document.getElementById('vtubertag2');
@@ -63,13 +68,16 @@
       vtag2.set_points(x);
     }
 
-    /*
-    vtag.bg_src = 'static/img/background.jpg';
-    vtag.src = 'static/img/nene.png';
-    vtag2.src = 'static/img/nene.png';
-    vtag2.bg_src = 'static/img/cojtroom.jpg';
-    */
+    document.getElementById("lipbtn").onclick = () => {
+      vtag.lipsynch_start(audio.duration*1000);
+      vtag2.lipsynch_start(audio.duration*1000);
+      audio.play();
+    }
+
+    let audio = document.getElementById("audio");
+
     vtag.callback = callback;
+    vtag.setting_callback = stag.show_setting;
     vtag.self_active = true;
     vtag2.comp_active = true;
 
@@ -77,6 +85,7 @@
       vtag2.set_texture(k, v);
     }
  </script>
+
 </body>
 </html>
 

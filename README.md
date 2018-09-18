@@ -65,7 +65,7 @@ htmlファイルで
   /*
   let callback = (points) => {
       console.log(points);
-      WEBSOCKET_SEND_MESSAGE(points)
+      WEBSOCKET_SEND_MESSAGE1(points)
   }
   vtag1.callback = callback;
   */
@@ -83,16 +83,28 @@ htmlファイルで
   /*
   vtag1.option_callback = (key, value) => {↲
     console.log(key, value);
-    WEBSOCKET_SEND_MESSAGE(key, value);
+    WEBSOCKET_SEND_MESSAGE2(key, value);
   }↲
   */
   
   /// 相手の背景や顔のスキンが変更した時に使うコールバック
   /*
-  WEBSOCKET_GET_MESSAGE(key, value) {
+  WEBSOCKET_GET_MESSAGE1(key, value) {
     vtag2.set_texture(key, value);
   }
   */
+  
+  /// 音声のデータが与えられた時、口パクする
+  /// audioタグのduration属性で再生時間を得て、lipsynch_startで口パク開始
+  WEBSOCKET_GET_MESSAGE2(src) {
+    audio.SET_SOURCE(src)
+    if (speak) {
+        vtag.lipsynch_start(audio.duration*1000);
+    } else {
+        vtag2.lipsynch_start(audio.duration*1000);
+    }
+    audio.play();
+  }
 </script>
 ```
 とすると使える
@@ -108,20 +120,23 @@ htmlファイルで
 <speaker-tag id="speakertag"></speaker-tag>
 
 <script type="module">
+let stag = document.getElementById("speakertag");
+stag.recognizer_active = true;
+stag.comp_active = true;
 
-  let stag = document.getElementById("speakertag");
-  
-  /// もしコールバック関数を設定したいなら
-  /// 変数xは認識した文字列
-  let callback = (x) => {
-    console.log(x);
-  }
-  stag.callback = callback;
-
-　　　　/// SpeakerTagを起動する。
-  stag.recognizer_active = true;
- </script>
+stag.callback = (text, voice, pitch, rate) => {
+  // WEBSOCKETR_SEND(text, voice, pitch, rate);
+  console.log(text, voice, pitch, rate);
+}
 ```
+recordボタンで認識を開始し、stopボタンで終了 また、VTuberTagの設定ボタンで声のモードを変更する。
+音声認識が行われるとcallback関数が呼び出されるので、いい感じに実装するとサーバに送ったりできる。
+
+また、SpeakerTagの設定をVTuberTagの設定ボタンで表示する。
+```
+vtag.setting_callback = stag.show_setting;
+```
+
 recordボタンで認識を開始し、stopボタンで終了
 また、VTuberTagの設定ボタンで声のモードを変更する。
 
