@@ -136,3 +136,13 @@ recordボタンで認識を開始し、stopボタンで終了 また、VTuberTag
 ```
 vtag.setting_callback = stag.show_setting;
 ```
+
+recordボタンで認識を開始し、stopボタンで終了
+また、VTuberTagの設定ボタンで声のモードを変更する。
+
+```
+vtag.setting_callback = stag.show_setting;
+```
+
+  import VTuberFrame from './static/VTuberFrame.js'つか
+  import VTuberFrame from './static/VTuberFrame.js'
